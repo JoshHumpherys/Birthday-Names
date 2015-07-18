@@ -1,5 +1,7 @@
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -96,10 +98,20 @@ public class Main extends JFrame {
 			}
 			else {
 				createButton = new JButton("Create");
+				createButton.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						create();
+					}					
+				});
 				panel.add(createButton);
 			}
 		}
 		
 		add(panel);
+	}
+	
+	private void create() {
+		System.out.println("create");
 	}
 }

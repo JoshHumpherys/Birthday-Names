@@ -1,12 +1,20 @@
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+//import java.awt.FontFormatException;
 import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+//import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.IOException;
+//import java.io.InputStream;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
@@ -25,6 +33,13 @@ public class Main extends JFrame {
 	
 	private static final String DIRECTORY = "";
 	
+	private static final Image BG = new ImageIcon(Main.class.getResource(DIRECTORY + "img/bg.png")).getImage();
+	final int BG_WIDTH = BG.getWidth(null);
+	final int BG_HEIGHT = BG.getHeight(null);
+	
+//	private static final InputStream LUCIDA_INPUT_STREAM = Main.class.getResourceAsStream(DIRECTORY + "fonts/22799_LCALLIG.ttf");
+//	private static Font lucida;
+	
 	private final String[] COLORS_ARRAY = {"Orange", "Blue", "Yellow", "Red"};
 	private final String[] DAYS_ARRAY = {"Thursday", "Friday", "Saturday", "Sunday"};
 	private final String[] SLOTS_ARRAY = {"Time Slot 1", "Time Slot 2", "Time Slot 3", "Time Slot 4"};
@@ -41,7 +56,7 @@ public class Main extends JFrame {
 	private JTextArea nameTextArea;
 	private JButton createButton;
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) {		
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
@@ -144,6 +159,14 @@ public class Main extends JFrame {
 		String name = nameTextArea.getText();
 		
 		BufferedImage image = createImage(color, name);
+		
+		try {
+			File output = new File("name.png");
+			ImageIO.write(image, "png", output);
+		}
+		catch(IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private BufferedImage createImage(String color, String name) {
@@ -154,7 +177,7 @@ public class Main extends JFrame {
 			g2d.setColor(new Color(255, 26, 26));
 			break;
 		case "blue":
-			g2d.setColor(new Color(0, 162, 132));
+			g2d.setColor(new Color(0, 162, 232));
 			break;
 		case "yellow":
 			g2d.setColor(new Color(255, 242, 0));
@@ -164,10 +187,46 @@ public class Main extends JFrame {
 			break;
 		}
 		
-		Image bg = new ImageIcon(this.getClass().getResource(DIRECTORY + "img/bg.png")).getImage();
+		g2d.drawImage(BG, 0, 0, BG_WIDTH, BG_HEIGHT, null);
 		
-		g2d.drawImage(bg, 0, 0, bg.getWidth(null), bg.getHeight(null), null);
+		String[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
 		
-		return null;
+		String font1String = "Times New Roman";
+		String font2String = "Lucida Calligraphy";
+		boolean b1 = false;
+		boolean b2 = false;
+		Font font1, font2;
+		for(String s : fonts) {
+			if(s.equals(font1String)) {
+				b1 = true;
+			}
+			if(s.equals(font2String)) {
+				b2 = true;
+			}
+		}
+		if(!b1) font1 = new Font(Font.SANS_SERIF, Font.BOLD, 144);
+		else font1 = new Font(font1String, Font.BOLD, 144);
+		if(!b2) font2 = new Font(Font.SANS_SERIF, Font.BOLD, 144);
+		else font2 = new Font(font2String, Font.PLAIN, 144);
+		
+		g2d.setFont(font1);
+		g2d.drawString("HAPPY BIRTHDAY", (BG_WIDTH - g2d.getFontMetrics().stringWidth("HAPPY BIRTHDAY")) / 2, (BG_HEIGHT + 144) / 2);
+		
+//		try {
+//			lucida = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/22799_LCALLIG.ttf"));
+//		}
+//		catch(IOException e) {
+//			e.printStackTrace();
+//		}
+//		catch(FontFormatException e) {
+//			e.printStackTrace();
+//		}
+//		
+//		g2d.setFont(new Font(lucida.toString(), Font.PLAIN, 144));
+		
+		g2d.setFont(font2);
+		g2d.drawString(name, (BG_WIDTH - g2d.getFontMetrics().stringWidth(name)) / 2, (BG_HEIGHT + 144) / 2 + 200);
+		
+		return image;
 	}
 }

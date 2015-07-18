@@ -15,6 +15,8 @@ import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
 public class Main extends JFrame {
+	private static final long serialVersionUID = -1683077438634744861L;
+	
 	private final String[] COLORS_ARRAY = {"Orange", "Blue", "Yellow", "Red"};
 	private final String[] DAYS_ARRAY = {"Thursday", "Friday", "Saturday", "Sunday"};
 	private final String[] SLOTS_ARRAY = {"Time Slot 1", "Time Slot 2", "Time Slot 3", "Time Slot 4"};
@@ -112,6 +114,22 @@ public class Main extends JFrame {
 	}
 	
 	private void create() {
-		System.out.println("create");
+		String color = null;
+		String day = null;
+		String slot = null;
+		for(int i = 0; i < 4; i++) {
+			if(colorsButtons[i].isSelected()) {
+				color = colorsButtons[i].getText().toLowerCase();
+			}
+			if(daysButtons[i].isSelected()) {
+				day = daysButtons[i].getText().toLowerCase();
+			}
+			if(slotsButtons[i].isSelected()) {
+				slot = Integer.toString(i);
+			}
+		}
+		System.out.println("color = " + color);
+		System.out.println("day = " + day);
+		System.out.println("slot = " + slot);
 	}
 }

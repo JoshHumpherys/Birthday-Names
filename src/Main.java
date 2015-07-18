@@ -166,6 +166,8 @@ public class Main extends JFrame {
 		
 		Image bg = new ImageIcon(this.getClass().getResource(DIRECTORY + "img/bg.png")).getImage();
 		
+		g2d.drawImage(bg, 0, 0, bg.getWidth(null), bg.getHeight(null), null);
+		
 		return null;
 	}
 }

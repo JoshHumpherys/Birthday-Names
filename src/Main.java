@@ -1,13 +1,19 @@
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -16,6 +22,8 @@ import javax.swing.SwingUtilities;
 
 public class Main extends JFrame {
 	private static final long serialVersionUID = -1683077438634744861L;
+	
+	private static final String DIRECTORY = "";
 	
 	private final String[] COLORS_ARRAY = {"Orange", "Blue", "Yellow", "Red"};
 	private final String[] DAYS_ARRAY = {"Thursday", "Friday", "Saturday", "Sunday"};
@@ -128,8 +136,36 @@ public class Main extends JFrame {
 				slot = Integer.toString(i);
 			}
 		}
-		System.out.println("color = " + color);
-		System.out.println("day = " + day);
-		System.out.println("slot = " + slot);
+		if(color == null || day == null || slot == null) {
+			JOptionPane.showMessageDialog(new JFrame(), "Please select a value from each of the 3 columns");
+			return;
+		}
+		
+		String name = nameTextArea.getText();
+		
+		BufferedImage image = createImage(color, name);
+	}
+	
+	private BufferedImage createImage(String color, String name) {
+		BufferedImage image = new BufferedImage(2250, 1265, BufferedImage.TYPE_INT_RGB);
+		Graphics2D g2d = image.createGraphics();
+		switch(color) {
+		case "orange":
+			g2d.setColor(new Color(255, 26, 26));
+			break;
+		case "blue":
+			g2d.setColor(new Color(0, 162, 132));
+			break;
+		case "yellow":
+			g2d.setColor(new Color(255, 242, 0));
+			break;
+		case "red":
+			g2d.setColor(new Color(165, 2, 2));
+			break;
+		}
+		
+		Image bg = new ImageIcon(this.getClass().getResource(DIRECTORY + "img/bg.png")).getImage();
+		
+		return null;
 	}
 }

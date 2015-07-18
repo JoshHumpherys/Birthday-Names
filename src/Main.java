@@ -146,7 +146,7 @@ public class Main extends JFrame {
 				day = daysButtons[i].getText().toLowerCase();
 			}
 			if(slotsButtons[i].isSelected()) {
-				slot = Integer.toString(i);
+				slot = Integer.toString(i + 1);
 			}
 		}
 		if(color == null || day == null || slot == null) {

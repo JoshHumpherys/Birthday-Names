@@ -1,7 +1,6 @@
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-//import java.awt.FontFormatException;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
@@ -9,11 +8,9 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-//import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-//import java.io.InputStream;
+import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -217,10 +214,20 @@ public class Main extends JFrame {
 				b2 = true;
 			}
 		}
-		if(!b1) font1 = new Font(Font.SANS_SERIF, Font.BOLD, 144);
-		else font1 = new Font(font1String, Font.BOLD, 144);
-		if(!b2) font2 = new Font(Font.SANS_SERIF, Font.BOLD, 144);
-		else font2 = new Font(font2String, Font.PLAIN, 144);
+		if(!b1) {
+			font1 = new Font(Font.SANS_SERIF, Font.BOLD, 144);
+			System.out.println("Font \"" + font1String + "\" does not exist\nList of available fonts: " + Arrays.toString(fonts));
+		}
+		else {
+			font1 = new Font(font1String, Font.BOLD, 144);
+		}
+		if(!b2) {
+			font2 = new Font(Font.SANS_SERIF, Font.BOLD, 144);
+			System.out.println("Font \"" + font2String + "\" does not exist\nList of available fonts: " + Arrays.toString(fonts));
+		}
+		else {
+			font2 = new Font(font2String, Font.PLAIN, 144);
+		}
 		
 		g2d.setFont(font1);
 		g2d.drawString("HAPPY BIRTHDAY", (BG_WIDTH - g2d.getFontMetrics().stringWidth("HAPPY BIRTHDAY")) / 2, (BG_HEIGHT + 144) / 2);

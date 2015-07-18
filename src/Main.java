@@ -170,7 +170,7 @@ public class Main extends JFrame {
 			new File(colorDir + "/" + dayDir).mkdir();
 		}
 		
-		File output = new File(colorDir + "/" + dayDir + "/name.png");
+		File output = new File(colorDir + "/" + dayDir + "/Time Slot " + slot + ".png");
 		try {
 			ImageIO.write(image, "png", output);
 		}

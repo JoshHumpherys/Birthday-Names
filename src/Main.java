@@ -29,7 +29,7 @@ import javax.swing.SwingUtilities;
 public class Main extends JFrame {
 	private static final long serialVersionUID = -1683077438634744861L;
 	
-	private static final String DIRECTORY = "";
+	private static final String DIRECTORY = "/";
 	
 	private static final Image BG = new ImageIcon(Main.class.getResource(DIRECTORY + "img/bg.png")).getImage();
 	final int BG_WIDTH = BG.getWidth(null);

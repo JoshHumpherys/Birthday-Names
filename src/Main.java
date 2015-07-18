@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 //import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 //import java.io.InputStream;
 
@@ -159,9 +160,21 @@ public class Main extends JFrame {
 		String name = nameTextArea.getText();
 		
 		BufferedImage image = createImage(color, name);
+
+		String colorDir = color.substring(0, 1).toUpperCase() + color.substring(1);
+		String dayDir = day.substring(0, 1).toUpperCase() + day.substring(1);
+
+		File colorFile = new File(colorDir);
+		if(!colorFile.exists()) {
+			new File(colorDir).mkdir();
+		}
+		File dayFile = new File(colorDir + "/" + dayDir);
+		if(!dayFile.exists()) {
+			new File(colorDir + "/" + dayDir).mkdir();
+		}
 		
+		File output = new File(colorDir + "/" + dayDir + "/name.png");
 		try {
-			File output = new File("name.png");
 			ImageIO.write(image, "png", output);
 		}
 		catch(IOException e) {

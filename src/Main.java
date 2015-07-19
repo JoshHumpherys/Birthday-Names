@@ -340,9 +340,26 @@ public class Main extends JFrame {
 //		
 //		g2d.setFont(new Font(lucida.toString(), Font.PLAIN, 144));
 		
-		g2d.setFont(font2);
-		g2d.drawString(name, (BG_WIDTH - g2d.getFontMetrics().stringWidth(name)) / 2, (BG_HEIGHT + 144) / 2 + 200);
-		
+		if(!name.contains("\n")) {
+			g2d.setFont(font2);
+			g2d.drawString(name, (BG_WIDTH - g2d.getFontMetrics().stringWidth(name)) / 2, (BG_HEIGHT + 144) / 2 + 200);
+		}
+		else {
+			g2d.setFont(font2);
+			int startY = 200;
+			String line = name.substring(0, name.indexOf("\n"));
+			g2d.drawString(line, (BG_WIDTH - g2d.getFontMetrics().stringWidth(line)) / 2, (BG_HEIGHT + 144) / 2 + startY);
+			name = name.substring(name.indexOf("\n") + 1);
+			while(name.contains("\n")) {
+				line = name.substring(0, name.indexOf("\n"));
+				startY += 160;
+				g2d.drawString(line, (BG_WIDTH - g2d.getFontMetrics().stringWidth(line)) / 2, (BG_HEIGHT + 144) / 2 + startY);
+				name = name.substring(name.indexOf("\n") + 1);
+			}
+			line = name.substring(name.indexOf("\n") + 1);
+			startY += 160;
+			g2d.drawString(line, (BG_WIDTH - g2d.getFontMetrics().stringWidth(line)) / 2, (BG_HEIGHT + 144) / 2 + startY);
+		}
 		return image;
 	}
 }

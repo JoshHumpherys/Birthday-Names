@@ -14,6 +14,7 @@ import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -25,11 +26,35 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 public class Main extends JFrame {
 	private static final long serialVersionUID = -1683077438634744861L;
 	
 	private static final String DIRECTORY = "/";
+	
+//	private static final int FRAME_WIDTH = 820;
+//	private static final int FRAME_HEIGHT = 200;
+	private static final int BUTTONS_PANEL_WIDTH = 500;
+	private static final int FRAME_HEIGHT = 250;
+	private static final int IMAGE_HEIGHT = FRAME_HEIGHT;
+	private static final int IMAGE_WIDTH = (int)(IMAGE_HEIGHT / 126d * 225);
+	private static final int FRAME_WIDTH = BUTTONS_PANEL_WIDTH + IMAGE_WIDTH;
+//	private static final int IMAGE_WIDTH;
+//	private static final int IMAGE_HEIGHT;
+//	static {
+//		int width = FRAME_HEIGHT / 126 * 225;
+//		int height = FRAME_WIDTH / 225 * 126;
+//		if(width / FRAME_HEIGHT > 225 / 126) { // width is too big so keep height the same
+//			IMAGE_WIDTH = width;
+//			IMAGE_HEIGHT = FRAME_HEIGHT;
+//		}
+//		else { // width is too small so keep width the same
+//			IMAGE_WIDTH = FRAME_WIDTH;
+//			IMAGE_HEIGHT = height;
+//		}
+//	}
 	
 	private static final Image BG = new ImageIcon(Main.class.getResource(DIRECTORY + "img/bg.png")).getImage();
 	final int BG_WIDTH = BG.getWidth(null);
@@ -54,12 +79,24 @@ public class Main extends JFrame {
 	private JTextArea nameTextArea;
 	private JButton createButton;
 	
-	public static void main(String[] args) {		
+	private JPanel panel;
+	private JPanel preview;
+	private JPanel container;
+	
+	private static JFrame frame;
+	
+	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				JFrame frame = new Main();
+				frame = new Main();
 				frame.setVisible(true);
+//				frame.addComponentListener(new ComponentAdapter() {
+//					@Override
+//					public void componentShown(ComponentEvent e) {
+//						((Main)frame).updatePreview();
+//					}
+//				});
 			}
 		});
 	}
@@ -70,13 +107,20 @@ public class Main extends JFrame {
 	
 	private void initUI() {
 		setTitle("Birthday Names");
-		setPreferredSize(new Dimension(500, 200));
+		setPreferredSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
 		pack();
 		setLocationRelativeTo(null);
 		setResizable(false);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
-		JPanel panel = new JPanel();
+		container = new JPanel();
+		container.setLayout(new BoxLayout(container, BoxLayout.X_AXIS));
+		
+		panel = new JPanel();
+		preview = new JPanel();
+		
+		panel.setMaximumSize(new Dimension(BUTTONS_PANEL_WIDTH, FRAME_HEIGHT));
+		preview.setMinimumSize(new Dimension(IMAGE_WIDTH, IMAGE_HEIGHT));
 		
 		panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		panel.setLayout(new GridLayout(4, 4, 5, 5));
@@ -116,6 +160,32 @@ public class Main extends JFrame {
 				nameTextArea.setWrapStyleWord(true);
 				nameTextArea.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 				
+//				nameTextArea.addKeyListener(new KeyListener() {
+//					@Override public void keyPressed(KeyEvent e) {}
+//					@Override public void keyReleased(KeyEvent e) {}
+//					@Override public void keyTyped(KeyEvent e) {
+//						updatePreview();
+//					}
+//				});
+				
+//				InputMap inputMap = nameTextArea.getInputMap(JTextArea.WHEN_FOCUSED);
+//				ActionMap actionMap = nameTextArea.getActionMap();
+//				
+//				inputMap.put(actionMap.get(KeyStroke.getKeyStroke(arg0)))
+				
+				nameTextArea.getDocument().addDocumentListener(new DocumentListener() {
+					@Override public void changedUpdate(DocumentEvent e) {}
+					@Override
+					public void insertUpdate(DocumentEvent e) {
+						updatePreview();
+					}
+					@Override
+					public void removeUpdate(DocumentEvent e) {
+						updatePreview();
+					}
+					
+				});
+				
 				nameScrollPane.getViewport().add(nameTextArea);
 				panel.add(nameScrollPane);
 			}
@@ -131,7 +201,30 @@ public class Main extends JFrame {
 			}
 		}
 		
-		add(panel);
+		container.add(panel);
+		container.add(preview);
+		
+		add(container);
+	}
+
+	public void updatePreview() {
+		String color = null;
+		for(int i = 0; i < 4; i++) {
+			if(colorsButtons[i].isSelected()) {
+				color = colorsButtons[i].getText().toLowerCase();
+			}
+		}
+		String name = nameTextArea.getText();
+		
+		if(color == null) {
+			name = "Please select a value from each of the 3 columns";
+			color = "white";
+		}
+		
+		BufferedImage image = createImage(color, name);
+		
+		Graphics2D g2d = (Graphics2D)preview.getGraphics();
+		g2d.drawImage(image, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT, null);
 	}
 	
 	private void create() {
@@ -194,6 +287,9 @@ public class Main extends JFrame {
 			break;
 		case "red":
 			g2d.setColor(new Color(165, 2, 2));
+			break;
+		case "white":
+			g2d.setColor(Color.WHITE);
 			break;
 		}
 		

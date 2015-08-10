@@ -224,6 +224,8 @@ public class Main extends JFrame {
 		BufferedImage image = createImage(color, name);
 		
 		Graphics2D g2d = (Graphics2D)preview.getGraphics();
+		g2d.setColor(Color.BLACK);
+		g2d.fillRect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
 		g2d.drawImage(image, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT, null);
 	}
 	
@@ -273,7 +275,7 @@ public class Main extends JFrame {
 	}
 	
 	private BufferedImage createImage(String color, String name) {
-		BufferedImage image = new BufferedImage(2250, 1265, BufferedImage.TYPE_INT_RGB);
+		BufferedImage image = new BufferedImage(2250, 1265, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g2d = image.createGraphics();
 		switch(color) {
 		case "orange":

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<head>
+<title>Happy birthday</title>
+<style type="text/css">
+body {
+  background-color:#000;
+  //overflow:hidden;
+}
+
+.main {
+	height: 100vh;
+}
+
+.player {
+	position: absolute;
+	padding-bottom: 56.25%; /* 16:9 */
+	padding-top: 25px;
+	height: 0;
+}
+
+.player iframe {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+</style>
+<script type="text/javascript">
+//	var video = document.getElementById("video")
+//	video.volume = 0;
+</script>
+</head>
+
+<body>
+<!--<iframe id="video" width="560" height="315" src="https://www.youtube.com/embed/XWagK42ObUA?autoplay=1&loop=1&playlist=XWagK42ObUA&showinfo=0&controls=0&modestbranding=1" frameborder="0" allowfullscreen></iframe>-->
+
+   <!-- 1. The <div> tag will contain the <iframe> (and video player) -->
+    <div id="player"></div>
+	<img src="Time Slot 2.png" style="position:absolute;z-index:100;top:0;left:0;width:100%;height:auto"></img>
+	<div id="nologo" style="background-color:#000;position:absolute;right:0;bottom:0;z-index=200;width:100px;height:100px;display:block"></div>
+<script>      // 2. This code loads the IFrame Player API code asynchronously.
+      var tag = document.createElement('script');
+      tag.src = "http://www.youtube.com/player_api";
+      var firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      // 3. This function creates an <iframe> (and YouTube player)
+      //    after the API code downloads.
+      var player;
+      function onYouTubePlayerAPIReady() {
+        player = new YT.Player('player', {
+		  width: '100%',
+          playerVars: { 'autoplay': 1, 'loop': 1, 'playlist': 'Du6n6wrEcxg', 'showinfo': 0, 'controls': 0, 'modestbranding': 1, nologo: 1},
+          videoId: 'Du6n6wrEcxg',
+          events: {
+            'onReady': onPlayerReady,
+			'onStateChange': onStateChange}
+        });
+      }
+
+      // 4. The API will call this function when the video player is ready.
+      function onPlayerReady(event) {
+		//alert("ready");
+        event.target.mute();
+      }
+	  
+	  function onStateChange(event) {
+		switch(event.data) {
+		case 0: // ended
+			document.getElementById("nologo").style.cssText="background-color:#000;position:absolute;right:0;bottom:0;z-index=200;width:100px;height:100px;display:block";
+			break;
+		case 1: // playing
+			setTimeout(function(){document.getElementById("nologo").style.cssText="display:none";}, 3000);
+			break;
+		}
+	  }
+</script>
+
+</body>
+
+</html>

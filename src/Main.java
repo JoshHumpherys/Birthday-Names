@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Arrays;
 
 import javax.imageio.ImageIO;
@@ -57,6 +58,7 @@ public class Main extends JFrame {
 //	}
 	
 	private static final Image BG = new ImageIcon(Main.class.getResource(DIRECTORY + "img/bg.png")).getImage();
+	private static final File html = new File(Main.class.getResource(DIRECTORY + "fireworks.html").getFile());
 	final int BG_WIDTH = BG.getWidth(null);
 	final int BG_HEIGHT = BG.getHeight(null);
 	
@@ -252,6 +254,8 @@ public class Main extends JFrame {
 		String name = nameTextArea.getText();
 		
 		BufferedImage image = createImage(color, name);
+		
+		String htmlString = createHtmlString(slot);
 
 		String colorDir = color.substring(0, 1).toUpperCase() + color.substring(1);
 		String dayDir = day.substring(0, 1).toUpperCase() + day.substring(1);
@@ -265,9 +269,15 @@ public class Main extends JFrame {
 			new File(colorDir + "/" + dayDir).mkdir();
 		}
 		
-		File output = new File(colorDir + "/" + dayDir + "/Time Slot " + slot + ".png");
+		File outputImage = new File(colorDir + "/" + dayDir + "/Time Slot " + slot + ".png");
+		File outputHtml = new File(colorDir + "/" + dayDir + "/Time Slot " + slot + ".html");
 		try {
-			ImageIO.write(image, "png", output);
+			ImageIO.write(image, "png", outputImage);
+//			FileUtils.writeStringToFile(outputHtml, htmlString);
+			PrintWriter writer = new PrintWriter(outputHtml);
+			writer.println(htmlString);
+			writer.close();
+			
 		}
 		catch(IOException e) {
 			e.printStackTrace();
@@ -363,5 +373,24 @@ public class Main extends JFrame {
 			g2d.drawString(line, (BG_WIDTH - g2d.getFontMetrics().stringWidth(line)) / 2, (BG_HEIGHT + 144) / 2 + startY);
 		}
 		return image;
+	}
+	
+	private String createHtmlString(String slot) {
+//		try {
+//			String htmlString = FileUtils.readFileToString(html);
+//			String name = "Time Slot " + slot + ".png";
+//			htmlString = htmlString.replace("$img", name);
+//			return htmlString;
+//		}
+//		catch (IOException e) {
+//			e.printStackTrace();
+//			System.out.println(html.canRead());
+//			System.out.println(html.exists());
+//			System.out.println(html.getAbsoluteFile().exists());
+//			return null;
+//		}
+		return "<!DOCTYPE html><head><title>Happy birthday</title><style type=\"text/css\">body { background-color:#000;}.main {height: 100vh;}.player {position: absolute;padding-bottom: 56.25%;padding-top: 25px;height: 0;}.player iframe {position: absolute;top: 0;left: 0;width: 100%;height: 100%;}</style></head><body> <div id=\"player\"></div><img src=\"Time Slot "
+				+ slot + ".png\" style=\"position:absolute;z-index:100;top:0;left:0;width:100%;height:auto\"></img><div id=\"nologo\" style=\"background-color:#000;position:absolute;right:0;bottom:0;z-index=200;width:100px;height:100px;display:block\"></div><script> var tag = document.createElement('script'); tag.src = \"http://www.youtube.com/player_api\"; var firstScriptTag = document.getElementsByTagName('script')[0]; firstScriptTag.parentNode.insertBefore(tag, firstScriptTag); var player; function onYouTubePlayerAPIReady() { player = new YT.Player('player', { width: '100%', playerVars: { 'autoplay': 1, 'loop': 1, 'playlist': 'Du6n6wrEcxg', 'showinfo': 0, 'controls': 0, 'modestbranding': 1, nologo: 1}, videoId: 'Du6n6wrEcxg', events: { 'onReady': onPlayerReady,'onStateChange': onStateChange} }); } function onPlayerReady(event) { event.target.mute(); } function onStateChange(event) {switch(event.data) {case 0:document.getElementById(\"nologo\").style.cssText=\"background-color:#000;position:absolute;right:0;bottom:0;z-index=200;width:100px;height:100px;display:block\";break;case 1:setTimeout(function(){document.getElementById(\"nologo\").style.cssText=\"display:none\";}, 3000);break;} }</script></body></html>";
+		
 	}
 }

@@ -58,7 +58,7 @@ public class Main extends JFrame {
 //	}
 	
 	private static final Image BG = new ImageIcon(Main.class.getResource(DIRECTORY + "img/bg.png")).getImage();
-	private static final File html = new File(Main.class.getResource(DIRECTORY + "fireworks.html").getFile());
+//	private static final File html = new File(Main.class.getResource(DIRECTORY + "fireworks.html").getFile());
 	final int BG_WIDTH = BG.getWidth(null);
 	final int BG_HEIGHT = BG.getHeight(null);
 	
@@ -389,8 +389,13 @@ public class Main extends JFrame {
 //			System.out.println(html.getAbsoluteFile().exists());
 //			return null;
 //		}
+		
+//		the following code does not resize a top-level window:
+//		<script type=\"text/javascript\">GlobalEventHandlers.onload=resizeWindow;function resizeWindow(){alert(\"hello world\");window.resizeTo(683, 469);}</script>
+//		onload=\"resizeWindow();\" // attribute for body tag
+		
 		return "<!DOCTYPE html><head><title>Happy birthday</title><style type=\"text/css\">body { background-color:#000;}.main {height: 100vh;}.player {position: absolute;padding-bottom: 56.25%;padding-top: 25px;height: 0;}.player iframe {position: absolute;top: 0;left: 0;width: 100%;height: 100%;}</style></head><body> <div id=\"player\"></div><img src=\"Time Slot "
-				+ slot + ".png\" style=\"position:absolute;z-index:100;top:0;left:0;width:100%;height:auto\"></img><div id=\"nologo\" style=\"background-color:#000;position:absolute;right:0;bottom:0;z-index=200;width:100px;height:100px;display:block\"></div><script> var tag = document.createElement('script'); tag.src = \"http://www.youtube.com/player_api\"; var firstScriptTag = document.getElementsByTagName('script')[0]; firstScriptTag.parentNode.insertBefore(tag, firstScriptTag); var player; function onYouTubePlayerAPIReady() { player = new YT.Player('player', { width: '100%', playerVars: { 'autoplay': 1, 'loop': 1, 'playlist': 'Du6n6wrEcxg', 'showinfo': 0, 'controls': 0, 'modestbranding': 1, nologo: 1}, videoId: 'Du6n6wrEcxg', events: { 'onReady': onPlayerReady,'onStateChange': onStateChange} }); } function onPlayerReady(event) { event.target.mute(); } function onStateChange(event) {switch(event.data) {case 0:document.getElementById(\"nologo\").style.cssText=\"background-color:#000;position:absolute;right:0;bottom:0;z-index=200;width:100px;height:100px;display:block\";break;case 1:setTimeout(function(){document.getElementById(\"nologo\").style.cssText=\"display:none\";}, 3000);break;} }</script></body></html>";
+				+ slot + ".png\" style=\"position:absolute;z-index:100;top:0;left:0;width:100%;height:auto\"></img><div id=\"nologo\" style=\"background-color:#000;position:absolute;right:0;bottom:0;z-index=200;width:100px;height:100px;display:block\"></div><script> var tag = document.createElement('script'); tag.src = \"http://www.youtube.com/player_api\"; var firstScriptTag = document.getElementsByTagName('script')[0]; firstScriptTag.parentNode.insertBefore(tag, firstScriptTag); var player; function onYouTubePlayerAPIReady() { player = new YT.Player('player', { width: '100%', playerVars: { 'autoplay': 1, 'loop': 1, 'playlist': 'Du6n6wrEcxg', 'showinfo': 0, 'controls': 0, 'modestbranding': 1, nologo: 1}, videoId: 'Du6n6wrEcxg', events: { 'onReady': onPlayerReady,'onStateChange': onStateChange} }); } function onPlayerReady(event) { event.target.mute(); } function onStateChange(event) {switch(event.data) {case 1:setTimeout(function(){document.getElementById(\"nologo\").style.cssText=\"display:none\";setTimeout(function(){document.getElementById(\"nologo\").style.cssText=\"background-color:#000;position:absolute;right:0;bottom:0;z-index=200;width:100px;height:100px;display:block\";},47000);}, 3000);break;default:document.getElementById(\"nologo\").style.cssText=\"background-color:#000;position:absolute;right:0;bottom:0;z-index=200;width:100px;height:100px;display:block\";break;} }</script></body></html>";
 		
 	}
 }

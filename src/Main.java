@@ -256,8 +256,10 @@ public class Main extends JFrame {
 			}
 			
 			// based on a stackoverflow snippet
-	        ProcessBuilder builder = new ProcessBuilder(
-	                "cmd.exe", "/c", "start \"\" chrome --user-data-dir=\"C:\\chrome\\tag" + slot + "\" --new-window \"C:\\chrome\\" + colorDir + ".html\"");
+//	        ProcessBuilder builder = new ProcessBuilder(
+//	                "cmd.exe", "/c", "start \"\" chrome --user-data-dir=\"C:\\chrome\\tag" + slot + "\" --new-window \"C:\\chrome\\" + colorDir + ".html\"");
+			ProcessBuilder builder = new ProcessBuilder(
+	                "cmd.exe", "/c", "start \"\" \"C:\\chrome\\application\\chrome.lnk\" --user-data-dir=\"C:\\chrome\\tag" + slot + "\" --new-window \"C:\\chrome\\" + colorDir + ".html\"");
 	            builder.redirectErrorStream(true);
 	            Process p = builder.start();
 	            BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));

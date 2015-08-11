@@ -8,8 +8,10 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
@@ -273,6 +275,27 @@ public class Main extends JFrame {
 			writer.println(htmlString);
 			writer.close();
 			
+		}
+		catch(IOException e) {
+			e.printStackTrace();
+		}
+		
+//		Runtime r = Runtime.getRuntime();
+		try {
+//			r.exec(new String[]{"start \"C:\\chrome\\application\\chrome\""});
+			
+			// based on a stackoverflow snippet
+	        ProcessBuilder builder = new ProcessBuilder(
+	                "cmd.exe", "/c", "start \"\" chrome --user-data-dir=\"C:\\chrome\\tag" + slot + "\" --new-window \"C:\\chrome\\" + colorDir + ".html\"");
+	            builder.redirectErrorStream(true);
+	            Process p = builder.start();
+	            BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
+	            String line;
+	            while (true) {
+	                line = r.readLine();
+	                if (line == null) { break; }
+	                System.out.println(line);
+	            }
 		}
 		catch(IOException e) {
 			e.printStackTrace();

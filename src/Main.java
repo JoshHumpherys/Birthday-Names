@@ -352,9 +352,9 @@ public class Main extends JFrame {
 		return image;
 	}
 	
-	private String createHtmlString(String color) {		
-		return "<!DOCTYPE html><head><title>Happy birthday</title><style type=\"text/css\">body { background-color:#000;}.main {height: 100vh;}.player {position: absolute;padding-bottom: 56.25%;padding-top: 25px;height: 0;}.player iframe {position: absolute;top: 0;left: 0;width: 100%;height: 100%;}</style></head><body> <div id=\"player\"></div><img src=\"file:///C:/chrome/"
-				+ color + ".png\" style=\"position:absolute;z-index:100;top:0;left:0;width:100%;height:auto\"></img><div id=\"nologo\" style=\"background-color:#000;position:absolute;right:0;bottom:0;z-index=200;width:100px;height:100px;display:block\"></div><script> var tag = document.createElement('script'); tag.src = \"http://www.youtube.com/player_api\"; var firstScriptTag = document.getElementsByTagName('script')[0]; firstScriptTag.parentNode.insertBefore(tag, firstScriptTag); var player; function onYouTubePlayerAPIReady() { player = new YT.Player('player', { width: '100%', playerVars: { 'autoplay': 1, 'loop': 1, 'playlist': 'Du6n6wrEcxg', 'showinfo': 0, 'controls': 0, 'modestbranding': 1, nologo: 1}, videoId: 'Du6n6wrEcxg', events: { 'onReady': onPlayerReady,'onStateChange': onStateChange} }); } function onPlayerReady(event) { event.target.mute(); } function onStateChange(event) {switch(event.data) {case 1:setTimeout(function(){document.getElementById(\"nologo\").style.cssText=\"display:none\";setTimeout(function(){document.getElementById(\"nologo\").style.cssText=\"background-color:#000;position:absolute;right:0;bottom:0;z-index=200;width:100px;height:100px;display:block\";},47000);}, 3000);break;default:document.getElementById(\"nologo\").style.cssText=\"background-color:#000;position:absolute;right:0;bottom:0;z-index=200;width:100px;height:100px;display:block\";break;} }</script></body></html>";
+	private String createHtmlString(String color) {
+		return "<!DOCTYPE html><head><title>Happy birthday</title><style type=\"text/css\">body { background-color:#000;}.main {height: 100vh;}.player {position: absolute;padding-bottom: 56.25%;padding-top: 25px;height: 0;}.player video {position: absolute;top: 0;left: 0;width: 100%;height: 100%;}</style></head><body> <div id=\"player\"><video width=\"100%\" autoplay loop muted><source src=\"C:\\chrome\\video\\fireworks.mp4\" type=\"video/mp4\"></video></div><img src=\"file:///C:/chrome/"
+				+ color + ".png\" style=\"position:absolute;z-index:100;top:0;left:0;width:100%;height:auto\"></img></body></html>";
 		
 	}
 }

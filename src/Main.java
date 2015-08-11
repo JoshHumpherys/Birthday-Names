@@ -1,6 +1,7 @@
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
@@ -37,47 +38,23 @@ public class Main extends JFrame {
 	
 	private static final String DIRECTORY = "/";
 	
-//	private static final int FRAME_WIDTH = 820;
-//	private static final int FRAME_HEIGHT = 200;
-	private static final int BUTTONS_PANEL_WIDTH = 500;
+	private static final int BUTTONS_PANEL_WIDTH = 253;
 	private static final int FRAME_HEIGHT = 250;
 	private static final int IMAGE_HEIGHT = FRAME_HEIGHT;
 	private static final int IMAGE_WIDTH = (int)(IMAGE_HEIGHT / 126d * 225);
 	private static final int FRAME_WIDTH = BUTTONS_PANEL_WIDTH + IMAGE_WIDTH;
-//	private static final int IMAGE_WIDTH;
-//	private static final int IMAGE_HEIGHT;
-//	static {
-//		int width = FRAME_HEIGHT / 126 * 225;
-//		int height = FRAME_WIDTH / 225 * 126;
-//		if(width / FRAME_HEIGHT > 225 / 126) { // width is too big so keep height the same
-//			IMAGE_WIDTH = width;
-//			IMAGE_HEIGHT = FRAME_HEIGHT;
-//		}
-//		else { // width is too small so keep width the same
-//			IMAGE_WIDTH = FRAME_WIDTH;
-//			IMAGE_HEIGHT = height;
-//		}
-//	}
 	
 	private static final Image BG = new ImageIcon(Main.class.getResource(DIRECTORY + "img/bg.png")).getImage();
-//	private static final File html = new File(Main.class.getResource(DIRECTORY + "fireworks.html").getFile());
-	final int BG_WIDTH = BG.getWidth(null);
-	final int BG_HEIGHT = BG.getHeight(null);
-	
-//	private static final InputStream LUCIDA_INPUT_STREAM = Main.class.getResourceAsStream(DIRECTORY + "fonts/22799_LCALLIG.ttf");
-//	private static Font lucida;
+	final static int BG_WIDTH = BG.getWidth(null);
+	final static int BG_HEIGHT = BG.getHeight(null);
 	
 	private final String[] COLORS_ARRAY = {"Orange", "Blue", "Yellow", "Red"};
-	private final String[] DAYS_ARRAY = {"Thursday", "Friday", "Saturday", "Sunday"};
-	private final String[] SLOTS_ARRAY = {"Time Slot 1", "Time Slot 2", "Time Slot 3", "Time Slot 4"};
+	
+	private JToggleButton orangeButton;
 	
 	private JToggleButton[] colorsButtons;
-	private JToggleButton[] daysButtons;
-	private JToggleButton[] slotsButtons;
 	
 	private ButtonGroup colors;
-	private ButtonGroup days;
-	private ButtonGroup slots;
 	
 	private JScrollPane nameScrollPane;
 	private JTextArea nameTextArea;
@@ -94,13 +71,8 @@ public class Main extends JFrame {
 			@Override
 			public void run() {
 				frame = new Main();
+				((Main)frame).orangeButton.doClick();
 				frame.setVisible(true);
-//				frame.addComponentListener(new ComponentAdapter() {
-//					@Override
-//					public void componentShown(ComponentEvent e) {
-//						((Main)frame).updatePreview();
-//					}
-//				});
 			}
 		});
 	}
@@ -121,38 +93,65 @@ public class Main extends JFrame {
 		container.setLayout(new BoxLayout(container, BoxLayout.X_AXIS));
 		
 		panel = new JPanel();
-		preview = new JPanel();
+		preview = new JPanel() {
+			private static final long serialVersionUID = 1L;
+			@Override public void paintComponent(Graphics g) {
+				String color = null;
+				if(colorsButtons == null) {
+					return;
+				}
+				for(int i = 0; i < 4; i++) {
+					if(colorsButtons[i] == null) {
+						return;
+					}
+					if(colorsButtons[i].isSelected()) {
+						color = colorsButtons[i].getText().toLowerCase();
+					}
+				}
+				String name = nameTextArea.getText();
+				
+				// shouldn't run
+				if(color == null) {
+					name = "Please select a color";
+					color = "white";
+				}
+				
+				BufferedImage image = Main.createImage(color, name);
+				
+				Graphics2D g2d = (Graphics2D)g;
+				g2d.setColor(Color.BLACK);
+				g2d.fillRect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
+				g2d.drawImage(image, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT, null);
+			}
+		};
 		
 		panel.setMaximumSize(new Dimension(BUTTONS_PANEL_WIDTH, FRAME_HEIGHT));
 		preview.setMinimumSize(new Dimension(IMAGE_WIDTH, IMAGE_HEIGHT));
 		
 		panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		panel.setLayout(new GridLayout(4, 4, 5, 5));
+		panel.setLayout(new GridLayout(4, 2, 5, 5));
 		
 		colorsButtons = new JToggleButton[4];
-		daysButtons = new JToggleButton[4];
-		slotsButtons = new JToggleButton[4];
 		
 		colors = new ButtonGroup();
-		days = new ButtonGroup();
-		slots = new ButtonGroup();
 		
 		for(int i = 0; i < 4; i++) {
 			JToggleButton colorButton = new JToggleButton(COLORS_ARRAY[i]);
-			JToggleButton dayButton = new JToggleButton(DAYS_ARRAY[i]);
-			JToggleButton slotButton = new JToggleButton(SLOTS_ARRAY[i]);
+			if(i == 0) {
+				orangeButton = colorButton;
+			}
+			
+			colorButton.addActionListener(new ActionListener() {
+				@Override public void actionPerformed(ActionEvent e) {
+					updatePreview();
+				}
+			});
 			
 			colorsButtons[i] = colorButton;
-			daysButtons[i] = dayButton;
-			slotsButtons[i] = slotButton;
 			
 			colors.add(colorButton);
-			days.add(dayButton);
-			slots.add(slotButton);
 
 			panel.add(colorButton);
-			panel.add(dayButton);
-			panel.add(slotButton);
 			if(i == 0 || i == 3) {
 				panel.add(new JLabel(""));
 			}
@@ -164,19 +163,6 @@ public class Main extends JFrame {
 				nameTextArea.setWrapStyleWord(true);
 				nameTextArea.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 				
-//				nameTextArea.addKeyListener(new KeyListener() {
-//					@Override public void keyPressed(KeyEvent e) {}
-//					@Override public void keyReleased(KeyEvent e) {}
-//					@Override public void keyTyped(KeyEvent e) {
-//						updatePreview();
-//					}
-//				});
-				
-//				InputMap inputMap = nameTextArea.getInputMap(JTextArea.WHEN_FOCUSED);
-//				ActionMap actionMap = nameTextArea.getActionMap();
-//				
-//				inputMap.put(actionMap.get(KeyStroke.getKeyStroke(arg0)))
-				
 				nameTextArea.getDocument().addDocumentListener(new DocumentListener() {
 					@Override public void changedUpdate(DocumentEvent e) {}
 					@Override
@@ -187,7 +173,6 @@ public class Main extends JFrame {
 					public void removeUpdate(DocumentEvent e) {
 						updatePreview();
 					}
-					
 				});
 				
 				nameScrollPane.getViewport().add(nameTextArea);
@@ -212,44 +197,18 @@ public class Main extends JFrame {
 	}
 
 	public void updatePreview() {
-		String color = null;
-		for(int i = 0; i < 4; i++) {
-			if(colorsButtons[i].isSelected()) {
-				color = colorsButtons[i].getText().toLowerCase();
-			}
-		}
-		String name = nameTextArea.getText();
-		
-		if(color == null) {
-			name = "Please select a value from each of the 3 columns";
-			color = "white";
-		}
-		
-		BufferedImage image = createImage(color, name);
-		
-		Graphics2D g2d = (Graphics2D)preview.getGraphics();
-		g2d.setColor(Color.BLACK);
-		g2d.fillRect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
-		g2d.drawImage(image, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT, null);
+		preview.repaint();
 	}
 	
 	private void create() {
 		String color = null;
-		String day = null;
-		String slot = null;
 		for(int i = 0; i < 4; i++) {
 			if(colorsButtons[i].isSelected()) {
 				color = colorsButtons[i].getText().toLowerCase();
 			}
-			if(daysButtons[i].isSelected()) {
-				day = daysButtons[i].getText().toLowerCase();
-			}
-			if(slotsButtons[i].isSelected()) {
-				slot = Integer.toString(i + 1);
-			}
 		}
-		if(color == null || day == null || slot == null) {
-			JOptionPane.showMessageDialog(new JFrame(), "Please select a value from each of the 3 columns");
+		if(color == null) {
+			JOptionPane.showMessageDialog(new JFrame(), "Please select a color");
 			return;
 		}
 		
@@ -270,7 +229,6 @@ public class Main extends JFrame {
 		File outputHtml = new File("C:/chrome/" + colorDir + ".html");
 		try {
 			ImageIO.write(image, "png", outputImage);
-//			FileUtils.writeStringToFile(outputHtml, htmlString);
 			PrintWriter writer = new PrintWriter(outputHtml);
 			writer.println(htmlString);
 			writer.close();
@@ -280,9 +238,22 @@ public class Main extends JFrame {
 			e.printStackTrace();
 		}
 		
-//		Runtime r = Runtime.getRuntime();
-		try {
-//			r.exec(new String[]{"start \"C:\\chrome\\application\\chrome\""});
+		try {			
+			String slot = null;
+			switch(colorDir) {
+			case "Orange":
+				slot = "1";
+				break;
+			case "Blue":
+				slot = "2";
+				break;
+			case "Yellow":
+				slot = "3";
+				break;
+			case "Red":
+				slot = "4";
+				break;
+			}
 			
 			// based on a stackoverflow snippet
 	        ProcessBuilder builder = new ProcessBuilder(
@@ -302,7 +273,7 @@ public class Main extends JFrame {
 		}
 	}
 	
-	private BufferedImage createImage(String color, String name) {
+	private static BufferedImage createImage(String color, String name) {
 		BufferedImage image = new BufferedImage(2250, 1265, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g2d = image.createGraphics();
 		switch(color) {
@@ -358,18 +329,6 @@ public class Main extends JFrame {
 		g2d.setFont(font1);
 		g2d.drawString("HAPPY BIRTHDAY", (BG_WIDTH - g2d.getFontMetrics().stringWidth("HAPPY BIRTHDAY")) / 2, (BG_HEIGHT + 144) / 2);
 		
-//		try {
-//			lucida = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/22799_LCALLIG.ttf"));
-//		}
-//		catch(IOException e) {
-//			e.printStackTrace();
-//		}
-//		catch(FontFormatException e) {
-//			e.printStackTrace();
-//		}
-//		
-//		g2d.setFont(new Font(lucida.toString(), Font.PLAIN, 144));
-		
 		if(!name.contains("\n")) {
 			g2d.setFont(font2);
 			g2d.drawString(name, (BG_WIDTH - g2d.getFontMetrics().stringWidth(name)) / 2, (BG_HEIGHT + 144) / 2 + 200);
@@ -393,25 +352,7 @@ public class Main extends JFrame {
 		return image;
 	}
 	
-	private String createHtmlString(String color) {
-//		try {
-//			String htmlString = FileUtils.readFileToString(html);
-//			String name = "Time Slot " + slot + ".png";
-//			htmlString = htmlString.replace("$img", name);
-//			return htmlString;
-//		}
-//		catch (IOException e) {
-//			e.printStackTrace();
-//			System.out.println(html.canRead());
-//			System.out.println(html.exists());
-//			System.out.println(html.getAbsoluteFile().exists());
-//			return null;
-//		}
-		
-//		the following code does not resize a top-level window:
-//		<script type=\"text/javascript\">GlobalEventHandlers.onload=resizeWindow;function resizeWindow(){alert(\"hello world\");window.resizeTo(683, 469);}</script>
-//		onload=\"resizeWindow();\" // attribute for body tag
-		
+	private String createHtmlString(String color) {		
 		return "<!DOCTYPE html><head><title>Happy birthday</title><style type=\"text/css\">body { background-color:#000;}.main {height: 100vh;}.player {position: absolute;padding-bottom: 56.25%;padding-top: 25px;height: 0;}.player iframe {position: absolute;top: 0;left: 0;width: 100%;height: 100%;}</style></head><body> <div id=\"player\"></div><img src=\"file:///C:/chrome/"
 				+ color + ".png\" style=\"position:absolute;z-index:100;top:0;left:0;width:100%;height:auto\"></img><div id=\"nologo\" style=\"background-color:#000;position:absolute;right:0;bottom:0;z-index=200;width:100px;height:100px;display:block\"></div><script> var tag = document.createElement('script'); tag.src = \"http://www.youtube.com/player_api\"; var firstScriptTag = document.getElementsByTagName('script')[0]; firstScriptTag.parentNode.insertBefore(tag, firstScriptTag); var player; function onYouTubePlayerAPIReady() { player = new YT.Player('player', { width: '100%', playerVars: { 'autoplay': 1, 'loop': 1, 'playlist': 'Du6n6wrEcxg', 'showinfo': 0, 'controls': 0, 'modestbranding': 1, nologo: 1}, videoId: 'Du6n6wrEcxg', events: { 'onReady': onPlayerReady,'onStateChange': onStateChange} }); } function onPlayerReady(event) { event.target.mute(); } function onStateChange(event) {switch(event.data) {case 1:setTimeout(function(){document.getElementById(\"nologo\").style.cssText=\"display:none\";setTimeout(function(){document.getElementById(\"nologo\").style.cssText=\"background-color:#000;position:absolute;right:0;bottom:0;z-index=200;width:100px;height:100px;display:block\";},47000);}, 3000);break;default:document.getElementById(\"nologo\").style.cssText=\"background-color:#000;position:absolute;right:0;bottom:0;z-index=200;width:100px;height:100px;display:block\";break;} }</script></body></html>";
 		

@@ -144,6 +144,7 @@ public class Main extends JFrame {
 			colorButton.addActionListener(new ActionListener() {
 				@Override public void actionPerformed(ActionEvent e) {
 					updatePreview();
+					nameTextArea.grabFocus();
 				}
 			});
 			
@@ -175,6 +176,8 @@ public class Main extends JFrame {
 					}
 				});
 				
+				nameTextArea.grabFocus();
+				
 				nameScrollPane.getViewport().add(nameTextArea);
 				panel.add(nameScrollPane);
 			}
@@ -184,6 +187,7 @@ public class Main extends JFrame {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						create();
+						nameTextArea.grabFocus();
 					}					
 				});
 				panel.add(createButton);

@@ -355,7 +355,14 @@ public class Main extends JFrame {
 	}
 	
 	private String createHtmlString(String color) {
-		return "<!DOCTYPE html><head><title>Happy birthday</title><style type=\"text/css\">body { background-color:#000;}.main {height: 100vh;}.player {position: absolute;padding-bottom: 56.25%;padding-top: 25px;height: 0;}.player video {position: absolute;top: 0;left: 0;width: 100%;height: 100%;}</style></head><body style=\"overflow:hidden\"> <div id=\"player\"><video width=\"100%\" autoplay loop muted><source src=\"C:\\chrome\\video\\fireworks.mp4\" type=\"video/mp4\"></video></div><img src=\"file:///C:/chrome/"
+		String videoTag = "";
+		if(new File("C:\\chrome\\video\\fireworks.mp4").exists()) {
+			videoTag = "<video width=\"100%\" autoplay loop muted><source src=\"C:\\chrome\\video\\fireworks.mp4\" type=\"video/mp4\"></video>";
+		}
+		else if(new File("C:\\chrome\\video\\fireworks.webm").exists()) {
+			videoTag = "<video width=\"100%\" autoplay loop muted><source src=\"C:\\chrome\\video\\fireworks.webm\" type=\"video/webm\"></video>";
+		}
+		return "<!DOCTYPE html><head><title>Happy birthday</title><style type=\"text/css\">body { background-color:#000;}.main {height: 100vh;}.player {position: absolute;padding-bottom: 56.25%;padding-top: 25px;height: 0;}.player video {position: absolute;top: 0;left: 0;width: 100%;height: 100%;}</style></head><body style=\"overflow:hidden\"> <div id=\"player\">" + videoTag + "</div><img src=\"file:///C:/chrome/"
 				+ color + ".png\" style=\"position:absolute;z-index:100;top:0;left:0;width:100%;height:auto\"></img></body></html>";
 		
 	}

@@ -286,21 +286,34 @@ public class Main extends JFrame {
 			int y = (screenHeight - windowHeight) / 2;
 //			this.setLocation(new Point((x * 2 + windowWidth), (screenHeight - FRAME_HEIGHT) / 2));
 //			this.setLocation(new Point((x + windowWidth), (screenHeight - FRAME_HEIGHT) / 2));
-			ProcessBuilder builder = new ProcessBuilder(
-	                "cmd.exe", "/c", "start \"\" \"C:\\chrome\\application\\chrome.lnk\" --user-data-dir=\"C:\\chrome\\tag"
+			String chromeDir = "\"C:\\chrome\\application\\chrome" + slot + ".lnk\"";
+//			if(!new File(chromeDir).exists()) {
+//				chromeDir = "\"C:\\chrome\\application\\chrome.lnk\"";
+//			}
+			ProcessBuilder kill = new ProcessBuilder("cmd.exe", "/c", "taskkill /IM chrome" + slot + ".exe /T /F > nul");
+	        ProcessBuilder create = new ProcessBuilder("cmd.exe", "/c", "start \"\" " + chromeDir + " --user-data-dir=\"C:\\chrome\\tag"
 	                + slot + "\" --new-window \"C:\\chrome\\" + colorDir + ".html\" --window-size=" + windowWidth + "," + windowHeight + " --window-position="
-	                + x + "," + y);
-	            builder.redirectErrorStream(true);
-	            Process p = builder.start();
-	            BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
-	            String line;
-	            while (true) {
-	                line = r.readLine();
-	                if (line == null) { break; }
-	                System.out.println(line);
-	            }
+	                + x + "," + y + " --disable-infobars"); // --disable-session-crashed-bubble
+//	        kill.start();
+            Process killProcess = kill.start();
+            killProcess.waitFor();
+	        create.start();
+            kill.redirectErrorStream(true);
+//            create.redirectErrorStream(true);
+//            Process createProcess = create.start();
+            BufferedReader killReader = new BufferedReader(new InputStreamReader(killProcess.getInputStream()));
+//            BufferedReader createReader = new BufferedReader(new InputStreamReader(createProcess.getInputStream()));
+            String line;
+            while (true) {
+                line = killReader.readLine();
+                if (line == null) { break; }
+                System.out.println(line);
+            }
 		}
 		catch(IOException e) {
+			e.printStackTrace();
+		}
+		catch(InterruptedException e) {
 			e.printStackTrace();
 		}
 	}

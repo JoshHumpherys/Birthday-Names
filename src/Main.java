@@ -6,6 +6,8 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -262,8 +264,25 @@ public class Main extends JFrame {
 			// based on a stackoverflow snippet
 //	        ProcessBuilder builder = new ProcessBuilder(
 //	                "cmd.exe", "/c", "start \"\" chrome --user-data-dir=\"C:\\chrome\\tag" + slot + "\" --new-window \"C:\\chrome\\" + colorDir + ".html\"");
+			Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+			int screenWidth = screenSize.width;
+			int screenHeight = screenSize.height;
+			int windowWidth = 25 * 30;
+			int windowHeight = 14 * 30 + 89;
+//			int x = (screenWidth - windowWidth) / 2;
+//			int x = (screenWidth - (FRAME_WIDTH + windowWidth)) / 3;
+//			int x = (screenWidth - (FRAME_WIDTH + windowWidth)) / 2;
+			int x = this.getLocation().x + BUTTONS_PANEL_WIDTH;
+			if(x + windowWidth > screenWidth) {
+				x = (screenWidth - windowWidth) / 2;
+			}
+			int y = (screenHeight - windowHeight) / 2;
+//			this.setLocation(new Point((x * 2 + windowWidth), (screenHeight - FRAME_HEIGHT) / 2));
+//			this.setLocation(new Point((x + windowWidth), (screenHeight - FRAME_HEIGHT) / 2));
 			ProcessBuilder builder = new ProcessBuilder(
-	                "cmd.exe", "/c", "start \"\" \"C:\\chrome\\application\\chrome.lnk\" --user-data-dir=\"C:\\chrome\\tag" + slot + "\" --new-window \"C:\\chrome\\" + colorDir + ".html\"");
+	                "cmd.exe", "/c", "start \"\" \"C:\\chrome\\application\\chrome.lnk\" --user-data-dir=\"C:\\chrome\\tag"
+	                + slot + "\" --new-window \"C:\\chrome\\" + colorDir + ".html\" --window-size=" + windowWidth + "," + windowHeight + " --window-position="
+	                + x + "," + y);
 	            builder.redirectErrorStream(true);
 	            Process p = builder.start();
 	            BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));

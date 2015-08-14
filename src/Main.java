@@ -190,6 +190,13 @@ public class Main extends JFrame {
 					public void actionPerformed(ActionEvent e) {
 						create();
 						nameTextArea.grabFocus();
+						nameTextArea.setText("");
+						for(int i = 0; i < 4; i++) {
+							if(colorsButtons[i].isSelected()) {
+								colorsButtons[i == 3 ? 0 : i + 1].doClick();
+								break;
+							}
+						}
 					}					
 				});
 				panel.add(createButton);

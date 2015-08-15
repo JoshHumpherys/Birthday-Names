@@ -6,10 +6,13 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
 import java.awt.Image;
-import java.awt.Point;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
@@ -35,6 +38,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+//public class Main extends JFrame implements KeyListener {
 public class Main extends JFrame {
 	private static final long serialVersionUID = -1683077438634744861L;
 	
@@ -67,6 +71,8 @@ public class Main extends JFrame {
 	private JPanel container;
 	
 	private static JFrame frame;
+	
+	private boolean upKeyDown, downKeyDown, enterKeyDown;
 	
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
@@ -191,12 +197,7 @@ public class Main extends JFrame {
 						create();
 						nameTextArea.grabFocus();
 						nameTextArea.setText("");
-						for(int i = 0; i < 4; i++) {
-							if(colorsButtons[i].isSelected()) {
-								colorsButtons[i == 3 ? 0 : i + 1].doClick();
-								break;
-							}
-						}
+						moveDown();
 					}					
 				});
 				panel.add(createButton);
@@ -207,6 +208,107 @@ public class Main extends JFrame {
 		container.add(preview);
 		
 		add(container);
+		
+		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
+			@Override
+			public boolean dispatchKeyEvent(KeyEvent e) {
+				switch(e.getID()) {
+				case KeyEvent.KEY_PRESSED:
+					switch(e.getKeyCode()) {
+					case KeyEvent.VK_DOWN:
+						if(!downKeyDown) {
+							downKeyDown = true;
+							moveDown();
+						}
+						return true;
+					case KeyEvent.VK_UP:
+						if(!upKeyDown) {
+							upKeyDown = true;
+							moveUp();
+						}
+						return true;
+					case KeyEvent.VK_ENTER:
+						if(!enterKeyDown && e.isShiftDown()) {
+							enterKeyDown = true;
+							create();
+							nameTextArea.grabFocus();
+							nameTextArea.setText("");
+							moveDown();
+						}
+					};
+					return false;
+				case KeyEvent.KEY_RELEASED:
+					switch(e.getKeyCode()) {
+					case KeyEvent.VK_DOWN:
+						downKeyDown = false;
+						return true;
+					case KeyEvent.VK_UP:
+						upKeyDown = false;
+						return true;
+					case KeyEvent.VK_ENTER:
+						enterKeyDown = false;
+						return true;
+					};
+					return false;
+				}
+				return false;
+			}
+		});
+		
+//		Action keyDown = new AbstractAction("down") {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				moveDown();
+//			}
+//		};
+//		Action keyUp = new AbstractAction("up") {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				moveUp();
+//			}
+//		};
+//		
+//		KeyStroke keyDownStroke = KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0);
+//		KeyStroke keyUpStroke = KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0);
+//		
+//		container.getActionMap().put("down", keyDown);
+//		container.getActionMap().put("up", keyUp);
+//		
+//		container.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyDownStroke, "down");
+//		container.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyUpStroke, "up");
+		
+//		container.addKeyListener(new KeyAdapter() {
+//			@Override
+//			public void keyPressed(KeyEvent e) {
+//				switch(e.getKeyCode()) {
+//				case KeyEvent.VK_DOWN:
+//					System.out.println("key down");
+//					moveDown();
+//					break;
+//				case KeyEvent.VK_UP:
+//					moveUp();
+//					break;
+//				}
+//			}
+//		});
+	}
+	
+	private void moveDown() {
+		for(int i = 0; i < 4; i++) {
+			if(colorsButtons[i].isSelected()) {
+				colorsButtons[i == 3 ? 0 : i + 1].doClick();
+				break;
+			}
+		}
+	}
+	
+	private void moveUp() {
+		for(int i = 0; i < 4; i++) {
+			if(colorsButtons[i].isSelected()) {
+				colorsButtons[i == 0 ? 3 : i - 1].doClick();
+				break;
+			}
+		}
 	}
 
 	public void updatePreview() {
@@ -300,7 +402,8 @@ public class Main extends JFrame {
 //	        create.start();
             kill.redirectErrorStream(true);
 //            create.redirectErrorStream(true);
-            Process createProcess = create.start();
+//            Process createProcess = create.start();
+            create.start();
 //            createProcess.waitFor();
 //            this.setVisible(true);
 //            this.toFront();
@@ -479,4 +582,21 @@ public class Main extends JFrame {
 				+ "</body>"
 				+ "</html>";
 	}
+
+//	@Override
+//	public void keyPressed(KeyEvent e) {
+//		switch(e.getKeyCode()) {
+//		case KeyEvent.VK_DOWN:
+//			System.out.println("key down");
+//			moveDown();
+//			break;
+//		case KeyEvent.VK_UP:
+//			moveUp();
+//			break;
+//		}
+//	}
+//
+//	@Override public void keyReleased(KeyEvent e) {}
+//
+//	@Override public void keyTyped(KeyEvent e) {}
 }

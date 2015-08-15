@@ -297,10 +297,17 @@ public class Main extends JFrame {
 //	        kill.start();
             Process killProcess = kill.start();
             killProcess.waitFor();
-	        create.start();
+//	        create.start();
             kill.redirectErrorStream(true);
 //            create.redirectErrorStream(true);
-//            Process createProcess = create.start();
+            Process createProcess = create.start();
+//            createProcess.waitFor();
+//            this.setVisible(true);
+//            this.toFront();
+//            this.requestFocus();
+//            this.setVisible(true);
+//            this.setFocusable(true);
+//            this.setFocusableWindowState(true);
             BufferedReader killReader = new BufferedReader(new InputStreamReader(killProcess.getInputStream()));
 //            BufferedReader createReader = new BufferedReader(new InputStreamReader(createProcess.getInputStream()));
             String line;
@@ -405,8 +412,71 @@ public class Main extends JFrame {
 		else if(new File("C:\\chrome\\video\\fireworks.webm").exists()) {
 			videoTag = "<video width=\"100%\" autoplay loop muted><source src=\"C:\\chrome\\video\\fireworks.webm\" type=\"video/webm\"></video>";
 		}
-		return "<!DOCTYPE html><head><title>Happy birthday</title><style type=\"text/css\">body { background-color:#000;}.main {height: 100vh;}.player {position: absolute;padding-bottom: 56.25%;padding-top: 25px;height: 0;}.player video {position: absolute;top: 0;left: 0;width: 100%;height: 100%;}</style></head><body style=\"overflow:hidden\"> <div id=\"player\">" + videoTag + "</div><img src=\"file:///C:/chrome/"
-				+ color + ".png\" style=\"position:absolute;z-index:100;top:0;left:0;width:100%;height:auto\"></img></body></html>";
 		
+		String chromecastSDKScript = "<script type=\"text/javascript\" src=\"https://www.gstatic.com/cv/js/sender/v1/cast_sender.js\"></script>"
+				+ "<script type=\"text/javascript\">"
+				+ "		var session = null;"
+				+ "		document.addEventListener(\"DOMContentLoaded\", function(e) {"
+				+ "			var loadCastInterval = setInterval(function() {"
+				+ "				if(chrome.cast.isAvailable) {"
+				+ "					clearInterval(loadCastInterval);"
+				+ "					initializeCastApi();"
+				+ "					chrome.cast.requestSession(onRequestSessionSuccess, onLaunchError);"
+				+ "				}"
+				+ "			}, 1000);"
+				+ "		});"
+				+ "		function initializeCastApi() {"
+				+ "			var applicationID = chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID;"
+				+ "			var sessionRequest = new chrome.cast.SessionRequest(applicationID);"
+				+ "			var apiConfig = new chrome.cast.ApiConfig(sessionRequest,sessionListener,receiverListener);"
+				+ "			chrome.cast.initialize(apiConfig, onInitSuccess, onInitError);"
+				+ "		}"
+				+ "		function sessionListener(e) {"
+				+ "			session = e;"
+				+ "			console.log(\"new session. found \" + session.media.length + \" sessions\");"
+				+ "		}"
+				+ "		function receiverListener(e) {"
+				+ "			if(e == \"available\") {"
+				+ "				console.log(\"Chromecast was found on the network.\");"
+				+ "			}"
+				+ "			else {"
+				+ "				console.log(\"There are no Chromecasts available.\");"
+				+ "			}"
+				+ "		}"
+				+ "		function onInitSuccess() {"
+				+ "			console.log(\"Initialization succeeded\");"
+				+ "		}"
+				+ "		function onInitError() {"
+				+ "			console.log(\"Initialization failed\");"
+				+ "		}"
+				+ "		function onRequestSessionSuccess(e) {"
+				+ "			session = e;"
+				+ "			console.log(\"Successfully created session: \" + e.sessionId);"
+				+ "		}"
+				+ "		function onLaunchError() {"
+				+ "			console.log(\"Error connecting to the Chromecast.\");"
+				+ "		}"
+				+ "</script>";
+		
+		if(new File("C:\\chrome\\params\\DO_NOT_USE_CHROMECAST_SDK_SCRIPT.txt").exists()) {
+			chromecastSDKScript = "";
+		}
+		
+		return "<!DOCTYPE html>"
+				+ "<head>"
+				+ "<title>Happy birthday</title>"
+				+ chromecastSDKScript
+				+ "<style type=\"text/css\">"
+				+ "		body { background-color:#000;}"
+				+ "		.main {height: 100vh;}"
+				+ "		.player {position: absolute;padding-bottom: 56.25%;padding-top: 25px;height: 0;}"
+				+ "		.player video {position: absolute;top: 0;left: 0;width: 100%;height: 100%;}"
+				+ "</style>"
+				+ "</head>"
+				+ "<body style=\"overflow:hidden\">"
+				+ "<div id=\"player\">" + videoTag + "</div>"
+				+ "<img src=\"file:///C:/chrome/" + color + ".png\" style=\"position:absolute;z-index:100;top:0;left:0;width:100%;height:auto\"></img>"
+				+ "</body>"
+				+ "</html>";
 	}
 }

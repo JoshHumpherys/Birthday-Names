@@ -51,6 +51,7 @@ public class Main extends JFrame {
 	private static final int FRAME_WIDTH = BUTTONS_PANEL_WIDTH + IMAGE_WIDTH;
 	
 	private static final Image BG = new ImageIcon(Main.class.getResource(DIRECTORY + "img/bg.png")).getImage();
+	private static final Image ICON = new ImageIcon(Main.class.getResource(DIRECTORY + "img/cake-512.png")).getImage();
 	final static int BG_WIDTH = BG.getWidth(null);
 	final static int BG_HEIGHT = BG.getHeight(null);
 	
@@ -91,6 +92,7 @@ public class Main extends JFrame {
 	
 	private void initUI() {
 		setTitle("Birthday Names");
+		setIconImage(ICON);
 		setPreferredSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
 		pack();
 		setLocationRelativeTo(null);

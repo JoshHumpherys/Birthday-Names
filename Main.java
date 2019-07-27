@@ -12,14 +12,15 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.Arrays;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -38,6 +39,8 @@ import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
+import com.sun.net.httpserver.*;
 
 public class Main extends JFrame {
     private static final long serialVersionUID = -1683077438634744861L;
@@ -78,6 +81,7 @@ public class Main extends JFrame {
     private boolean upKeyDown, downKeyDown, enterKeyDown;
 
     public static void main(String[] args) {
+        // Launch the application window
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -86,6 +90,9 @@ public class Main extends JFrame {
                 frame.setVisible(true);
             }
         });
+
+        // Launch an HTTP server to serve up the html files
+        launchHttpServer();
     }
 
     public Main() {
@@ -107,12 +114,14 @@ public class Main extends JFrame {
         panel = new JPanel();
         preview = new JPanel() {
             private static final long serialVersionUID = 1L;
-            @Override public void paintComponent(Graphics g) {
+
+            @Override
+            public void paintComponent(Graphics g) {
                 String color = null;
                 if (colorsButtons == null) {
                     return;
                 }
-                for (int i = 0; i < 4; i++) {
+                for (var i = 0; i < colorsButtons.length; i++) {
                     if (colorsButtons[i] == null) {
                         return;
                     }
@@ -120,18 +129,19 @@ public class Main extends JFrame {
                         color = colorsButtons[i].getText().toLowerCase();
                     }
                 }
-                String name = nameTextArea.getText();
-                boolean happyBirthday = happyBirthdayCheckBox.isSelected();
+                var name = nameTextArea.getText();
+                var happyBirthday = happyBirthdayCheckBox.isSelected();
 
                 // shouldn't run
                 if (color == null) {
-                    name = "Please select a color";
                     color = "white";
+                    name = "Please select a color";
+                    happyBirthday = false;
                 }
 
-                BufferedImage image = Main.createImage(color, happyBirthday, name);
+                var image = Main.createImage(color, happyBirthday, name);
 
-                Graphics2D g2d = (Graphics2D)g;
+                var g2d = (Graphics2D)g;
                 g2d.setColor(Color.BLACK);
                 g2d.fillRect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
                 g2d.drawImage(image, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT, null);
@@ -148,7 +158,7 @@ public class Main extends JFrame {
 
         colors = new ButtonGroup();
 
-        for (int i = 0; i < 4; i++) {
+        for (var i = 0; i < 4; i++) {
             var colorButton = new JToggleButton(COLORS_ARRAY[i]);
             if (i == 0) {
                 orangeButton = colorButton;
@@ -176,11 +186,9 @@ public class Main extends JFrame {
                     }
                 });
                 panel.add(happyBirthdayCheckBox);
-            }
-            else if (i == 3) {
+            } else if (i == 3) {
                 panel.add(new JLabel(""));
-            }
-            else if (i == 2) {
+            } else if (i == 2) {
                 nameScrollPane = new JScrollPane();
                 nameTextArea = new JTextArea();
 
@@ -204,8 +212,7 @@ public class Main extends JFrame {
 
                 nameScrollPane.getViewport().add(nameTextArea);
                 panel.add(nameScrollPane);
-            }
-            else {
+            } else {
                 createButton = new JButton("Create");
                 createButton.addActionListener(new ActionListener() {
                     @Override
@@ -273,7 +280,7 @@ public class Main extends JFrame {
     }
 
     private void moveDown() {
-        for (int i = 0; i < 4; i++) {
+        for (var i = 0; i < 4; i++) {
             if (colorsButtons[i].isSelected()) {
                 colorsButtons[i == 3 ? 0 : i + 1].doClick();
                 break;
@@ -282,7 +289,7 @@ public class Main extends JFrame {
     }
 
     private void moveUp() {
-        for (int i = 0; i < 4; i++) {
+        for (var i = 0; i < 4; i++) {
             if (colorsButtons[i].isSelected()) {
                 colorsButtons[i == 0 ? 3 : i - 1].doClick();
                 break;
@@ -295,7 +302,7 @@ public class Main extends JFrame {
     }
 
     private void create() {
-        var color = null;
+        String color = null;
         for (var i = 0; i < 4; i++) {
             if (colorsButtons[i].isSelected()) {
                 color = colorsButtons[i].getText().toLowerCase();
@@ -327,13 +334,12 @@ public class Main extends JFrame {
             var writer = new PrintWriter(outputHtml);
             writer.println(htmlString);
             writer.close();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
         try {
-            var slot = null;
+            String slot = null;
             switch (colorDir) {
             case "Orange":
                 slot = "1";
@@ -363,24 +369,22 @@ public class Main extends JFrame {
             var chromeDir = "\"C:\\chrome\\application\\chrome" + slot + ".lnk\"";
             var kill = new ProcessBuilder("cmd.exe", "/c", "taskkill /IM chrome" + slot + ".exe /T /F > nul");
             var create = new ProcessBuilder("cmd.exe", "/c", "start \"\" " + chromeDir + " --user-data-dir=\"C:\\chrome\\tag"
-                    + slot + "\" --new-window \"C:\\chrome\\" + colorDir + ".html\" --window-size=" + windowWidth + "," + windowHeight + " --window-position="
+                    + slot + "\" --new-window \"localhost:8000/" + colorDir + " --window-size=" + windowWidth + "," + windowHeight + " --window-position="
                     + x + "," + y + " --disable-infobars");
             var killProcess = kill.start();
             killProcess.waitFor();
             kill.redirectErrorStream(true);
             create.start();
             var killReader = new BufferedReader(new InputStreamReader(killProcess.getInputStream()));
-            var line;
+            String line;
             while (true) {
                 line = killReader.readLine();
                 if (line == null) { break; }
                 System.out.println(line);
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -415,26 +419,26 @@ public class Main extends JFrame {
         var b1 = false;
         var b2 = false;
         Font font1, font2;
-        for (var s : fonts) {
-            if (s.equals(font1String)) {
+        for (var font : fonts) {
+            if (font.equals(font1String)) {
                 b1 = true;
             }
-            if (s.equals(font2String)) {
+            if (font.equals(font2String)) {
                 b2 = true;
             }
         }
+
         if (!b1) {
             font1 = new Font(Font.SANS_SERIF, Font.BOLD, 144);
-            System.out.println("Font \"" + font1String + "\" does not exist\nList of available fonts: " + Arrays.toString(fonts));
-        }
-        else {
+            System.out.println("Font \"" + font1String + "\" does not exist");
+        } else {
             font1 = new Font(font1String, Font.BOLD, 144);
         }
+
         if (!b2) {
             font2 = new Font(Font.SANS_SERIF, Font.BOLD, 144);
-            System.out.println("Font \"" + font2String + "\" does not exist\nList of available fonts: " + Arrays.toString(fonts));
-        }
-        else {
+            System.out.println("Font \"" + font2String + "\" does not exist");
+        } else {
             font2 = new Font(font2String, Font.PLAIN, 144);
         }
 
@@ -450,8 +454,7 @@ public class Main extends JFrame {
         if (!name.contains("\n")) {
             g2d.setFont(font2);
             g2d.drawString(name, (BG_WIDTH - g2d.getFontMetrics().stringWidth(name)) / 2, (BG_HEIGHT + 144) / 2 + 200 + shift);
-        }
-        else {
+        } else {
             g2d.setFont(font2);
             var startY = 200;
             var line = name.substring(0, name.indexOf("\n"));
@@ -474,8 +477,7 @@ public class Main extends JFrame {
         var videoTag = "";
         if (new File("C:\\chrome\\video\\fireworks.mp4").exists()) {
             videoTag = "<video width=\"100%\" autoplay loop muted><source src=\"C:\\chrome\\video\\fireworks.mp4\" type=\"video/mp4\"></video>";
-        }
-        else if (new File("C:\\chrome\\video\\fireworks.webm").exists()) {
+        } else if (new File("C:\\chrome\\video\\fireworks.webm").exists()) {
             videoTag = "<video width=\"100%\" autoplay loop muted><source src=\"C:\\chrome\\video\\fireworks.webm\" type=\"video/webm\"></video>";
         }
 
@@ -539,10 +541,72 @@ public class Main extends JFrame {
                 + "        .player video {position: absolute;top: 0;left: 0;width: 100%;height: 100%;}"
                 + "</style>"
                 + "</head>"
-                + "<body style=\"overflow:hidden\">"
+                + "<body style=\"overflow:hidden;margin:0;\">"
                 + "<div id=\"player\">" + videoTag + "</div>"
                 + "<img src=\"file:///C:/chrome/" + color + ".png\" style=\"position:absolute;z-index:100;top:0;left:0;width:100%;height:auto\"></img>"
                 + "</body>"
                 + "</html>";
+    }
+
+    private static void launchHttpServer() {
+        HttpServer server;
+        try {
+            server = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), 8000), 0);
+        } catch (IOException e) {
+            System.out.println("Error creating http server");
+            e.printStackTrace();
+            return;
+        }
+
+        server.createContext("/", new BirthdayNamesHttpHandler());
+
+        server.start();
+    }
+
+    private static class BirthdayNamesHttpHandler implements HttpHandler {
+        public void handle(HttpExchange httpExchange) throws IOException {
+            Headers headers = httpExchange.getResponseHeaders();
+            headers.set("Content-Type","text/html");
+
+            var uri = httpExchange.getRequestURI();
+            var path = uri.getPath();
+
+            if (path.length() == 0) {
+                handleTextResponse(httpExchange, "Bad request", 400);
+            }
+
+            var pathWithSlashRemoved = path.substring(1);
+
+            var htmlFilePath = "C:\\chrome\\" + pathWithSlashRemoved + ".html";
+
+            if (pathWithSlashRemoved.equals("fireworks.mp4") || pathWithSlashRemoved.equals("bg.png")) {
+                handleFileResponse(httpExchange, pathWithSlashRemoved);
+            } else if (new File(htmlFilePath).exists()) {
+                handleFileResponse(httpExchange, htmlFilePath);
+            } else {
+                handleTextResponse(httpExchange, "404\n", 404);
+            }
+        }
+
+        private void handleTextResponse(HttpExchange httpExchange, String text, int responseCode) throws IOException {
+            httpExchange.sendResponseHeaders(responseCode, text.length());
+
+            var outputStream = httpExchange.getResponseBody();
+            outputStream.write(text.getBytes());
+            outputStream.close();
+        }
+
+        private void handleFileResponse(HttpExchange httpExchange, String path) throws IOException {
+            httpExchange.sendResponseHeaders(200, 0);
+            var outputStream = httpExchange.getResponseBody();
+            var fileInputStream = new FileInputStream(path);
+            final byte[] buffer = new byte[0x10000];
+            int count = 0;
+            while ((count = fileInputStream.read(buffer)) >= 0) {
+                outputStream.write(buffer, 0, count);
+            }
+            fileInputStream.close();
+            outputStream.close();
+        }
     }
 }

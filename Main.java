@@ -55,7 +55,7 @@ public class Main extends JFrame {
     final static int BG_WIDTH = BG.getWidth(null);
     final static int BG_HEIGHT = BG.getHeight(null);
 
-    private final String[] COLORS_ARRAY = {"Orange", "Blue", "Yellow", "Red"};
+    private final String[] COLORS_ARRAY = { "Orange", "Blue", "Yellow", "Red" };
 
     private JToggleButton orangeButton;
 
@@ -112,7 +112,7 @@ public class Main extends JFrame {
                 if (colorsButtons == null) {
                     return;
                 }
-                for(int i = 0; i < 4; i++) {
+                for (int i = 0; i < 4; i++) {
                     if (colorsButtons[i] == null) {
                         return;
                     }
@@ -148,8 +148,8 @@ public class Main extends JFrame {
 
         colors = new ButtonGroup();
 
-        for(int i = 0; i < 4; i++) {
-            JToggleButton colorButton = new JToggleButton(COLORS_ARRAY[i]);
+        for (int i = 0; i < 4; i++) {
+            var colorButton = new JToggleButton(COLORS_ARRAY[i]);
             if (i == 0) {
                 orangeButton = colorButton;
             }
@@ -170,11 +170,11 @@ public class Main extends JFrame {
                 happyBirthdayCheckBox = new JCheckBox("Birthday");
                 happyBirthdayCheckBox.setSelected(true);
                 happyBirthdayCheckBox.addActionListener(new ActionListener() {
-                @Override public void actionPerformed(ActionEvent e) {
-                    updatePreview();
-                    nameTextArea.grabFocus();
-                }
-            });
+                    @Override public void actionPerformed(ActionEvent e) {
+                        updatePreview();
+                        nameTextArea.grabFocus();
+                    }
+                });
                 panel.add(happyBirthdayCheckBox);
             }
             else if (i == 3) {
@@ -273,7 +273,7 @@ public class Main extends JFrame {
     }
 
     private void moveDown() {
-        for(int i = 0; i < 4; i++) {
+        for (int i = 0; i < 4; i++) {
             if (colorsButtons[i].isSelected()) {
                 colorsButtons[i == 3 ? 0 : i + 1].doClick();
                 break;
@@ -282,7 +282,7 @@ public class Main extends JFrame {
     }
 
     private void moveUp() {
-        for(int i = 0; i < 4; i++) {
+        for (int i = 0; i < 4; i++) {
             if (colorsButtons[i].isSelected()) {
                 colorsButtons[i == 0 ? 3 : i - 1].doClick();
                 break;
@@ -295,8 +295,8 @@ public class Main extends JFrame {
     }
 
     private void create() {
-        String color = null;
-        for(int i = 0; i < 4; i++) {
+        var color = null;
+        for (var i = 0; i < 4; i++) {
             if (colorsButtons[i].isSelected()) {
                 color = colorsButtons[i].getText().toLowerCase();
             }
@@ -306,35 +306,34 @@ public class Main extends JFrame {
             return;
         }
 
-        String name = nameTextArea.getText();
-        boolean happyBirthday = happyBirthdayCheckBox.isSelected();
+        var name = nameTextArea.getText();
+        var happyBirthday = happyBirthdayCheckBox.isSelected();
 
-        BufferedImage image = createImage(color, happyBirthday, name);
+        var image = createImage(color, happyBirthday, name);
 
-        String colorDir = color.substring(0, 1).toUpperCase() + color.substring(1);
+        var colorDir = color.substring(0, 1).toUpperCase() + color.substring(1);
 
-        String htmlString = createHtmlString(colorDir);
+        var htmlString = createHtmlString(colorDir);
 
-        File resFile = new File("C:/chrome/");
+        var resFile = new File("C:/chrome/");
         if (!resFile.exists()) {
             new File("C:/chrome/").mkdir();
         }
 
-        File outputImage = new File("C:/chrome/" + colorDir + ".png");
-        File outputHtml = new File("C:/chrome/" + colorDir + ".html");
+        var outputImage = new File("C:/chrome/" + colorDir + ".png");
+        var outputHtml = new File("C:/chrome/" + colorDir + ".html");
         try {
             ImageIO.write(image, "png", outputImage);
-            PrintWriter writer = new PrintWriter(outputHtml);
+            var writer = new PrintWriter(outputHtml);
             writer.println(htmlString);
             writer.close();
-
         }
         catch (IOException e) {
             e.printStackTrace();
         }
 
         try {
-            String slot = null;
+            var slot = null;
             switch (colorDir) {
             case "Orange":
                 slot = "1";
@@ -351,27 +350,27 @@ public class Main extends JFrame {
             }
 
             // based on a stackoverflow snippet
-            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            int screenWidth = screenSize.width;
-            int screenHeight = screenSize.height;
-            int windowWidth = 25 * 30;
-            int windowHeight = 14 * 30 + 89;
-            int x = this.getLocation().x + BUTTONS_PANEL_WIDTH;
+            var screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            var screenWidth = screenSize.width;
+            var screenHeight = screenSize.height;
+            var windowWidth = 25 * 30;
+            var windowHeight = 14 * 30 + 89;
+            var x = this.getLocation().x + BUTTONS_PANEL_WIDTH;
             if (x + windowWidth > screenWidth) {
                 x = (screenWidth - windowWidth) / 2;
             }
-            int y = (screenHeight - windowHeight) / 2;
-            String chromeDir = "\"C:\\chrome\\application\\chrome" + slot + ".lnk\"";
-            ProcessBuilder kill = new ProcessBuilder("cmd.exe", "/c", "taskkill /IM chrome" + slot + ".exe /T /F > nul");
-            ProcessBuilder create = new ProcessBuilder("cmd.exe", "/c", "start \"\" " + chromeDir + " --user-data-dir=\"C:\\chrome\\tag"
+            var y = (screenHeight - windowHeight) / 2;
+            var chromeDir = "\"C:\\chrome\\application\\chrome" + slot + ".lnk\"";
+            var kill = new ProcessBuilder("cmd.exe", "/c", "taskkill /IM chrome" + slot + ".exe /T /F > nul");
+            var create = new ProcessBuilder("cmd.exe", "/c", "start \"\" " + chromeDir + " --user-data-dir=\"C:\\chrome\\tag"
                     + slot + "\" --new-window \"C:\\chrome\\" + colorDir + ".html\" --window-size=" + windowWidth + "," + windowHeight + " --window-position="
                     + x + "," + y + " --disable-infobars");
-            Process killProcess = kill.start();
+            var killProcess = kill.start();
             killProcess.waitFor();
             kill.redirectErrorStream(true);
             create.start();
-            BufferedReader killReader = new BufferedReader(new InputStreamReader(killProcess.getInputStream()));
-            String line;
+            var killReader = new BufferedReader(new InputStreamReader(killProcess.getInputStream()));
+            var line;
             while (true) {
                 line = killReader.readLine();
                 if (line == null) { break; }
@@ -387,8 +386,8 @@ public class Main extends JFrame {
     }
 
     private static BufferedImage createImage(String color, boolean happyBirthday, String name) {
-        BufferedImage image = new BufferedImage(2250, 1265, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2d = image.createGraphics();
+        var image = new BufferedImage(2250, 1265, BufferedImage.TYPE_INT_ARGB);
+        var g2d = image.createGraphics();
         switch (color) {
         case "orange":
             g2d.setColor(new Color(255, 26, 26));
@@ -409,14 +408,14 @@ public class Main extends JFrame {
 
         g2d.drawImage(BG, 0, 0, BG_WIDTH, BG_HEIGHT, null);
 
-        String[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+        var fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
 
-        String font1String = "Times New Roman";
-        String font2String = "Lucida Calligraphy";
-        boolean b1 = false;
-        boolean b2 = false;
+        var font1String = "Times New Roman";
+        var font2String = "Lucida Calligraphy";
+        var b1 = false;
+        var b2 = false;
         Font font1, font2;
-        for(String s : fonts) {
+        for (var s : fonts) {
             if (s.equals(font1String)) {
                 b1 = true;
             }
@@ -439,7 +438,7 @@ public class Main extends JFrame {
             font2 = new Font(font2String, Font.PLAIN, 144);
         }
 
-        int shift = 0;
+        var shift = 0;
         g2d.setFont(font1);
         if (happyBirthday) {
             final String happyBirthdayString = "HAPPY BIRTHDAY";
@@ -454,8 +453,8 @@ public class Main extends JFrame {
         }
         else {
             g2d.setFont(font2);
-            int startY = 200;
-            String line = name.substring(0, name.indexOf("\n"));
+            var startY = 200;
+            var line = name.substring(0, name.indexOf("\n"));
             g2d.drawString(line, (BG_WIDTH - g2d.getFontMetrics().stringWidth(line)) / 2, (BG_HEIGHT + 144) / 2 + startY + shift);
             name = name.substring(name.indexOf("\n") + 1);
             while (name.contains("\n")) {
@@ -472,7 +471,7 @@ public class Main extends JFrame {
     }
 
     private String createHtmlString(String color) {
-        String videoTag = "";
+        var videoTag = "";
         if (new File("C:\\chrome\\video\\fireworks.mp4").exists()) {
             videoTag = "<video width=\"100%\" autoplay loop muted><source src=\"C:\\chrome\\video\\fireworks.mp4\" type=\"video/mp4\"></video>";
         }
@@ -480,7 +479,7 @@ public class Main extends JFrame {
             videoTag = "<video width=\"100%\" autoplay loop muted><source src=\"C:\\chrome\\video\\fireworks.webm\" type=\"video/webm\"></video>";
         }
 
-        String chromecastSDKScript = "<script type=\"text/javascript\" src=\"https://www.gstatic.com/cv/js/sender/v1/cast_sender.js\"></script>"
+        var chromecastSDKScript = "<script type=\"text/javascript\" src=\"https://www.gstatic.com/cv/js/sender/v1/cast_sender.js\"></script>"
                 + "<script type=\"text/javascript\">"
                 + "        var session = null;"
                 + "        document.addEventListener(\"DOMContentLoaded\", function(e) {"

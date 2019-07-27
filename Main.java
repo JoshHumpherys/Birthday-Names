@@ -39,7 +39,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-//public class Main extends JFrame implements KeyListener {
 public class Main extends JFrame {
     private static final long serialVersionUID = -1683077438634744861L;
 
@@ -110,28 +109,28 @@ public class Main extends JFrame {
             private static final long serialVersionUID = 1L;
             @Override public void paintComponent(Graphics g) {
                 String color = null;
-                if(colorsButtons == null) {
+                if (colorsButtons == null) {
                     return;
                 }
                 for(int i = 0; i < 4; i++) {
-                    if(colorsButtons[i] == null) {
+                    if (colorsButtons[i] == null) {
                         return;
                     }
-                    if(colorsButtons[i].isSelected()) {
+                    if (colorsButtons[i].isSelected()) {
                         color = colorsButtons[i].getText().toLowerCase();
                     }
                 }
                 String name = nameTextArea.getText();
                 boolean happyBirthday = happyBirthdayCheckBox.isSelected();
-       
+
                 // shouldn't run
-                if(color == null) {
+                if (color == null) {
                     name = "Please select a color";
                     color = "white";
                 }
-       
+
                 BufferedImage image = Main.createImage(color, happyBirthday, name);
-       
+
                 Graphics2D g2d = (Graphics2D)g;
                 g2d.setColor(Color.BLACK);
                 g2d.fillRect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
@@ -151,23 +150,23 @@ public class Main extends JFrame {
 
         for(int i = 0; i < 4; i++) {
             JToggleButton colorButton = new JToggleButton(COLORS_ARRAY[i]);
-            if(i == 0) {
+            if (i == 0) {
                 orangeButton = colorButton;
             }
-   
+
             colorButton.addActionListener(new ActionListener() {
                 @Override public void actionPerformed(ActionEvent e) {
                     updatePreview();
                     nameTextArea.grabFocus();
                 }
             });
-   
+
             colorsButtons[i] = colorButton;
-   
+
             colors.add(colorButton);
 
             panel.add(colorButton);
-            if(i == 0) {
+            if (i == 0) {
                 happyBirthdayCheckBox = new JCheckBox("Birthday");
                 happyBirthdayCheckBox.setSelected(true);
                 happyBirthdayCheckBox.addActionListener(new ActionListener() {
@@ -178,17 +177,17 @@ public class Main extends JFrame {
             });
                 panel.add(happyBirthdayCheckBox);
             }
-            else if(i == 3) {
+            else if (i == 3) {
                 panel.add(new JLabel(""));
             }
-            else if(i == 2) {
+            else if (i == 2) {
                 nameScrollPane = new JScrollPane();
                 nameTextArea = new JTextArea();
-       
+
                 nameTextArea.setLineWrap(true);
                 nameTextArea.setWrapStyleWord(true);
                 nameTextArea.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-       
+
                 nameTextArea.getDocument().addDocumentListener(new DocumentListener() {
                     @Override public void changedUpdate(DocumentEvent e) {}
                     @Override
@@ -200,9 +199,9 @@ public class Main extends JFrame {
                         updatePreview();
                     }
                 });
-       
+
                 nameTextArea.grabFocus();
-       
+
                 nameScrollPane.getViewport().add(nameTextArea);
                 panel.add(nameScrollPane);
             }
@@ -215,7 +214,7 @@ public class Main extends JFrame {
                         nameTextArea.grabFocus();
                         nameTextArea.setText("");
                         moveDown();
-                    }           
+                    }
                 });
                 panel.add(createButton);
             }
@@ -229,23 +228,23 @@ public class Main extends JFrame {
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
             @Override
             public boolean dispatchKeyEvent(KeyEvent e) {
-                switch(e.getID()) {
+                switch (e.getID()) {
                 case KeyEvent.KEY_PRESSED:
-                    switch(e.getKeyCode()) {
+                    switch (e.getKeyCode()) {
                     case KeyEvent.VK_DOWN:
-                        if(!downKeyDown) {
+                        if (!downKeyDown) {
                             downKeyDown = true;
                             moveDown();
                         }
                         return true;
                     case KeyEvent.VK_UP:
-                        if(!upKeyDown) {
+                        if (!upKeyDown) {
                             upKeyDown = true;
                             moveUp();
                         }
                         return true;
                     case KeyEvent.VK_ENTER:
-                        if(!enterKeyDown && e.isShiftDown()) {
+                        if (!enterKeyDown && e.isShiftDown()) {
                             enterKeyDown = true;
                             create();
                             nameTextArea.grabFocus();
@@ -255,7 +254,7 @@ public class Main extends JFrame {
                     };
                     return false;
                 case KeyEvent.KEY_RELEASED:
-                    switch(e.getKeyCode()) {
+                    switch (e.getKeyCode()) {
                     case KeyEvent.VK_DOWN:
                         downKeyDown = false;
                         return true;
@@ -271,48 +270,11 @@ public class Main extends JFrame {
                 return false;
             }
         });
-
-//        Action keyDown = new AbstractAction("down") {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                moveDown();
-//            }
-//        };
-//        Action keyUp = new AbstractAction("up") {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                moveUp();
-//            }
-//        };
-//
-//        KeyStroke keyDownStroke = KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0);
-//        KeyStroke keyUpStroke = KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0);
-//
-//        container.getActionMap().put("down", keyDown);
-//        container.getActionMap().put("up", keyUp);
-//
-//        container.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyDownStroke, "down");
-//        container.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyUpStroke, "up");
-
-//        container.addKeyListener(new KeyAdapter() {
-//            @Override
-//            public void keyPressed(KeyEvent e) {
-//                switch(e.getKeyCode()) {
-//                case KeyEvent.VK_DOWN:
-//                    System.out.println("key down");
-//                    moveDown();
-//                    break;
-//                case KeyEvent.VK_UP:
-//                    moveUp();
-//                    break;
-//                }
-//            }
-//        });
     }
 
     private void moveDown() {
         for(int i = 0; i < 4; i++) {
-            if(colorsButtons[i].isSelected()) {
+            if (colorsButtons[i].isSelected()) {
                 colorsButtons[i == 3 ? 0 : i + 1].doClick();
                 break;
             }
@@ -321,7 +283,7 @@ public class Main extends JFrame {
 
     private void moveUp() {
         for(int i = 0; i < 4; i++) {
-            if(colorsButtons[i].isSelected()) {
+            if (colorsButtons[i].isSelected()) {
                 colorsButtons[i == 0 ? 3 : i - 1].doClick();
                 break;
             }
@@ -335,11 +297,11 @@ public class Main extends JFrame {
     private void create() {
         String color = null;
         for(int i = 0; i < 4; i++) {
-            if(colorsButtons[i].isSelected()) {
+            if (colorsButtons[i].isSelected()) {
                 color = colorsButtons[i].getText().toLowerCase();
             }
         }
-        if(color == null) {
+        if (color == null) {
             JOptionPane.showMessageDialog(new JFrame(), "Please select a color");
             return;
         }
@@ -354,7 +316,7 @@ public class Main extends JFrame {
         String htmlString = createHtmlString(colorDir);
 
         File resFile = new File("C:/chrome/");
-        if(!resFile.exists()) {
+        if (!resFile.exists()) {
             new File("C:/chrome/").mkdir();
         }
 
@@ -365,15 +327,15 @@ public class Main extends JFrame {
             PrintWriter writer = new PrintWriter(outputHtml);
             writer.println(htmlString);
             writer.close();
-   
+
         }
-        catch(IOException e) {
+        catch (IOException e) {
             e.printStackTrace();
         }
 
-        try {   
+        try {
             String slot = null;
-            switch(colorDir) {
+            switch (colorDir) {
             case "Orange":
                 slot = "1";
                 break;
@@ -387,50 +349,28 @@ public class Main extends JFrame {
                 slot = "4";
                 break;
             }
-   
+
             // based on a stackoverflow snippet
-//            ProcessBuilder builder = new ProcessBuilder(
-//                    "cmd.exe", "/c", "start \"\" chrome --user-data-dir=\"C:\\chrome\\tag" + slot + "\" --new-window \"C:\\chrome\\" + colorDir + ".html\"");
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
             int screenWidth = screenSize.width;
             int screenHeight = screenSize.height;
             int windowWidth = 25 * 30;
             int windowHeight = 14 * 30 + 89;
-//            int x = (screenWidth - windowWidth) / 2;
-//            int x = (screenWidth - (FRAME_WIDTH + windowWidth)) / 3;
-//            int x = (screenWidth - (FRAME_WIDTH + windowWidth)) / 2;
             int x = this.getLocation().x + BUTTONS_PANEL_WIDTH;
-            if(x + windowWidth > screenWidth) {
+            if (x + windowWidth > screenWidth) {
                 x = (screenWidth - windowWidth) / 2;
             }
             int y = (screenHeight - windowHeight) / 2;
-//            this.setLocation(new Point((x * 2 + windowWidth), (screenHeight - FRAME_HEIGHT) / 2));
-//            this.setLocation(new Point((x + windowWidth), (screenHeight - FRAME_HEIGHT) / 2));
             String chromeDir = "\"C:\\chrome\\application\\chrome" + slot + ".lnk\"";
-//            if(!new File(chromeDir).exists()) {
-//                chromeDir = "\"C:\\chrome\\application\\chrome.lnk\"";
-//            }
             ProcessBuilder kill = new ProcessBuilder("cmd.exe", "/c", "taskkill /IM chrome" + slot + ".exe /T /F > nul");
             ProcessBuilder create = new ProcessBuilder("cmd.exe", "/c", "start \"\" " + chromeDir + " --user-data-dir=\"C:\\chrome\\tag"
                     + slot + "\" --new-window \"C:\\chrome\\" + colorDir + ".html\" --window-size=" + windowWidth + "," + windowHeight + " --window-position="
-                    + x + "," + y + " --disable-infobars"); // --disable-session-crashed-bubble
-//            kill.start();
+                    + x + "," + y + " --disable-infobars");
             Process killProcess = kill.start();
             killProcess.waitFor();
-//            create.start();
             kill.redirectErrorStream(true);
-//            create.redirectErrorStream(true);
-//            Process createProcess = create.start();
             create.start();
-//            createProcess.waitFor();
-//            this.setVisible(true);
-//            this.toFront();
-//            this.requestFocus();
-//            this.setVisible(true);
-//            this.setFocusable(true);
-//            this.setFocusableWindowState(true);
             BufferedReader killReader = new BufferedReader(new InputStreamReader(killProcess.getInputStream()));
-//            BufferedReader createReader = new BufferedReader(new InputStreamReader(createProcess.getInputStream()));
             String line;
             while (true) {
                 line = killReader.readLine();
@@ -438,10 +378,10 @@ public class Main extends JFrame {
                 System.out.println(line);
             }
         }
-        catch(IOException e) {
+        catch (IOException e) {
             e.printStackTrace();
         }
-        catch(InterruptedException e) {
+        catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -449,7 +389,7 @@ public class Main extends JFrame {
     private static BufferedImage createImage(String color, boolean happyBirthday, String name) {
         BufferedImage image = new BufferedImage(2250, 1265, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = image.createGraphics();
-        switch(color) {
+        switch (color) {
         case "orange":
             g2d.setColor(new Color(255, 26, 26));
             break;
@@ -477,21 +417,21 @@ public class Main extends JFrame {
         boolean b2 = false;
         Font font1, font2;
         for(String s : fonts) {
-            if(s.equals(font1String)) {
+            if (s.equals(font1String)) {
                 b1 = true;
             }
-            if(s.equals(font2String)) {
+            if (s.equals(font2String)) {
                 b2 = true;
             }
         }
-        if(!b1) {
+        if (!b1) {
             font1 = new Font(Font.SANS_SERIF, Font.BOLD, 144);
             System.out.println("Font \"" + font1String + "\" does not exist\nList of available fonts: " + Arrays.toString(fonts));
         }
         else {
             font1 = new Font(font1String, Font.BOLD, 144);
         }
-        if(!b2) {
+        if (!b2) {
             font2 = new Font(Font.SANS_SERIF, Font.BOLD, 144);
             System.out.println("Font \"" + font2String + "\" does not exist\nList of available fonts: " + Arrays.toString(fonts));
         }
@@ -501,14 +441,14 @@ public class Main extends JFrame {
 
         int shift = 0;
         g2d.setFont(font1);
-        if(happyBirthday) {
+        if (happyBirthday) {
             final String happyBirthdayString = "HAPPY BIRTHDAY";
             g2d.drawString(happyBirthdayString, (BG_WIDTH - g2d.getFontMetrics().stringWidth(happyBirthdayString)) / 2, (BG_HEIGHT + 144) / 2);
         } else {
             shift = -200;
         }
 
-        if(!name.contains("\n")) {
+        if (!name.contains("\n")) {
             g2d.setFont(font2);
             g2d.drawString(name, (BG_WIDTH - g2d.getFontMetrics().stringWidth(name)) / 2, (BG_HEIGHT + 144) / 2 + 200 + shift);
         }
@@ -518,7 +458,7 @@ public class Main extends JFrame {
             String line = name.substring(0, name.indexOf("\n"));
             g2d.drawString(line, (BG_WIDTH - g2d.getFontMetrics().stringWidth(line)) / 2, (BG_HEIGHT + 144) / 2 + startY + shift);
             name = name.substring(name.indexOf("\n") + 1);
-            while(name.contains("\n")) {
+            while (name.contains("\n")) {
                 line = name.substring(0, name.indexOf("\n"));
                 startY += 160;
                 g2d.drawString(line, (BG_WIDTH - g2d.getFontMetrics().stringWidth(line)) / 2, (BG_HEIGHT + 144) / 2 + startY + shift);
@@ -533,10 +473,10 @@ public class Main extends JFrame {
 
     private String createHtmlString(String color) {
         String videoTag = "";
-        if(new File("C:\\chrome\\video\\fireworks.mp4").exists()) {
+        if (new File("C:\\chrome\\video\\fireworks.mp4").exists()) {
             videoTag = "<video width=\"100%\" autoplay loop muted><source src=\"C:\\chrome\\video\\fireworks.mp4\" type=\"video/mp4\"></video>";
         }
-        else if(new File("C:\\chrome\\video\\fireworks.webm").exists()) {
+        else if (new File("C:\\chrome\\video\\fireworks.webm").exists()) {
             videoTag = "<video width=\"100%\" autoplay loop muted><source src=\"C:\\chrome\\video\\fireworks.webm\" type=\"video/webm\"></video>";
         }
 
@@ -545,7 +485,7 @@ public class Main extends JFrame {
                 + "        var session = null;"
                 + "        document.addEventListener(\"DOMContentLoaded\", function(e) {"
                 + "            var loadCastInterval = setInterval(function() {"
-                + "                if(chrome.cast.isAvailable) {"
+                + "                if (chrome.cast.isAvailable) {"
                 + "                    clearInterval(loadCastInterval);"
                 + "                    initializeCastApi();"
                 + "                    chrome.cast.requestSession(onRequestSessionSuccess, onLaunchError);"
@@ -563,7 +503,7 @@ public class Main extends JFrame {
                 + "            console.log(\"new session. found \" + session.media.length + \" sessions\");"
                 + "        }"
                 + "        function receiverListener(e) {"
-                + "            if(e == \"available\") {"
+                + "            if (e == \"available\") {"
                 + "                console.log(\"Chromecast was found on the network.\");"
                 + "            }"
                 + "            else {"
@@ -585,7 +525,7 @@ public class Main extends JFrame {
                 + "        }"
                 + "</script>";
 
-        if(new File("C:\\chrome\\params\\DO_NOT_USE_CHROMECAST_SDK_SCRIPT.txt").exists()) {
+        if (new File("C:\\chrome\\params\\DO_NOT_USE_CHROMECAST_SDK_SCRIPT.txt").exists()) {
             chromecastSDKScript = "";
         }
 
@@ -606,21 +546,4 @@ public class Main extends JFrame {
                 + "</body>"
                 + "</html>";
     }
-
-//    @Override
-//    public void keyPressed(KeyEvent e) {
-//        switch(e.getKeyCode()) {
-//        case KeyEvent.VK_DOWN:
-//            System.out.println("key down");
-//            moveDown();
-//            break;
-//        case KeyEvent.VK_UP:
-//            moveUp();
-//            break;
-//        }
-//    }
-//
-//    @Override public void keyReleased(KeyEvent e) {}
-//
-//    @Override public void keyTyped(KeyEvent e) {}
 }

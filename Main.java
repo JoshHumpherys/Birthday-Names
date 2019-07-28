@@ -584,11 +584,11 @@ public class Main extends JFrame {
                 pathWithSlashRemoved.equals("bg.png")) {
                 handleFileResponse(httpExchange, "C:\\chrome\\" + pathWithSlashRemoved);
             } else if (
-                pathWithSlashRemoved.equals("Orange") ||
-                pathWithSlashRemoved.equals("Blue") ||
-                pathWithSlashRemoved.equals("Yellow") ||
-                pathWithSlashRemoved.equals("Red")) {
-                handleFileResponse(httpExchange, "C:\\chrome\\" + pathWithSlashRemoved + ".png");
+                pathWithSlashRemoved.equals("Orange.png") ||
+                pathWithSlashRemoved.equals("Blue.png") ||
+                pathWithSlashRemoved.equals("Yellow.png") ||
+                pathWithSlashRemoved.equals("Red.png")) {
+                handleFileResponse(httpExchange, "C:\\chrome\\" + pathWithSlashRemoved);
             } else if (new File(htmlFilePath).exists()) {
                 handleFileResponse(httpExchange, htmlFilePath);
             } else {

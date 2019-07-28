@@ -370,7 +370,7 @@ public class Main extends JFrame {
             var kill = new ProcessBuilder("cmd.exe", "/c", "taskkill /IM chrome" + slot + ".exe /T /F > nul");
             var create = new ProcessBuilder("cmd.exe", "/c", "start \"\" " + chromeDir + " --user-data-dir=\"C:\\chrome\\tag"
                     + slot + "\" --new-window \"localhost:8000/" + colorDir + " --window-size=" + windowWidth + "," + windowHeight + " --window-position="
-                    + x + "," + y + " --disable-infobars");
+                    + x + "," + y + " --disable-infobars --allow-file-access-from-files");
             var killProcess = kill.start();
             killProcess.waitFor();
             kill.redirectErrorStream(true);
@@ -476,9 +476,9 @@ public class Main extends JFrame {
     private String createHtmlString(String color) {
         var videoTag = "";
         if (new File("C:\\chrome\\video\\fireworks.mp4").exists()) {
-            videoTag = "<video width=\"100%\" autoplay loop muted><source src=\"C:\\chrome\\video\\fireworks.mp4\" type=\"video/mp4\"></video>";
+            videoTag = "<video width=\"100%\" autoplay loop muted><source src=\"fireworks.mp4\" type=\"video/mp4\"></video>";
         } else if (new File("C:\\chrome\\video\\fireworks.webm").exists()) {
-            videoTag = "<video width=\"100%\" autoplay loop muted><source src=\"C:\\chrome\\video\\fireworks.webm\" type=\"video/webm\"></video>";
+            videoTag = "<video width=\"100%\" autoplay loop muted><source src=\"fireworks.webm\" type=\"video/webm\"></video>";
         }
 
         var chromecastSDKScript = "<script type=\"text/javascript\" src=\"https://www.gstatic.com/cv/js/sender/v1/cast_sender.js\"></script>"
@@ -543,7 +543,7 @@ public class Main extends JFrame {
                 + "</head>"
                 + "<body style=\"overflow:hidden;margin:0;\">"
                 + "<div id=\"player\">" + videoTag + "</div>"
-                + "<img src=\"file:///C:/chrome/" + color + ".png\" style=\"position:absolute;z-index:100;top:0;left:0;width:100%;height:auto\"></img>"
+                + "<img src=\"" + color + ".png\" style=\"position:absolute;z-index:100;top:0;left:0;width:100%;height:auto\"></img>"
                 + "</body>"
                 + "</html>";
     }
@@ -579,8 +579,16 @@ public class Main extends JFrame {
 
             var htmlFilePath = "C:\\chrome\\" + pathWithSlashRemoved + ".html";
 
-            if (pathWithSlashRemoved.equals("fireworks.mp4") || pathWithSlashRemoved.equals("bg.png")) {
-                handleFileResponse(httpExchange, pathWithSlashRemoved);
+            if (pathWithSlashRemoved.equals("fireworks.mp4") ||
+                pathWithSlashRemoved.equals("fireworks.webm") ||
+                pathWithSlashRemoved.equals("bg.png")) {
+                handleFileResponse(httpExchange, "C:\\chrome\\" + pathWithSlashRemoved);
+            } else if (
+                pathWithSlashRemoved.equals("Orange") ||
+                pathWithSlashRemoved.equals("Blue") ||
+                pathWithSlashRemoved.equals("Yellow") ||
+                pathWithSlashRemoved.equals("Red")) {
+                handleFileResponse(httpExchange, "C:\\chrome\\" + pathWithSlashRemoved + ".png");
             } else if (new File(htmlFilePath).exists()) {
                 handleFileResponse(httpExchange, htmlFilePath);
             } else {
